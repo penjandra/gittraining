@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Robustest - Testing is as easy as 123</title>
+
+  <meta name="description" content="overview &amp; stats" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+  <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script> 
+  <script type="text/javascript" src="/js/jquery.timeago.js"></script>
+
+  <script src="/js/bootstrap.min.js"></script>
+
+
+  <script type="text/javascript" src="/_ah/channel/jsapi"></script>
+  <!-- basic styles -->
+
+  <link href="/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+  <link href="/css/watable.css" rel="stylesheet" />
+  <link href="/css/bootstrap-editable.css" rel="stylesheet">
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="/css/font-awesome-ie7.min.css" />
+      <![endif]-->
+
+      <!-- page specific plugin styles -->
+
+      <!-- fonts -->
+
+      <link rel="stylesheet" href="/css/ace-fonts.css" />
+
+      <!-- ace styles -->
+
+      <link rel="stylesheet" href="/css/ace.min.css" />
+      <link rel="stylesheet" href="/css/ace-rtl.min.css" />
+      <link rel="stylesheet" href="/css/ace-skins.min.css" />
+
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="/css/ace-ie.min.css" />
+      <![endif]-->
+
+      <!-- inline styles related to this page -->
+
+      <!-- ace settings handler -->
+
+      <script src="/js/ace-extra.min.js"></script>
+
+      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar navbar-default" id="navbar" style="background: #FFF;">
+      <script type="text/javascript">
+      try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+      </script>
+
+      <div class="navbar-container" id="navbar-container">
+        <div class="navbar-header pull-left">
+          <a href="/" class="navbar-brand">
+            <img src="/img/logo.png   " style="">
+          </a><!-- /.brand -->
+        </div><!-- /.navbar-header -->
+
+        <div class="navbar-header pull-right" role="navigation">
+          <ul class="nav ace-nav" style="padding-top: 20px;">
+            <li class="grey">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <i class="icon-tasks"></i>
+                <span class="badge badge-grey">4</span>
+              </a>
+
+              <ul class="pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+                <li class="dropdown-header">
+                  <i class="icon-ok"></i>
+                  4 Tasks to complete
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">Software Update</span>
+                      <span class="pull-right">65%</span>
+                    </div>
+
+                    <div class="progress progress-mini ">
+                      <div style="width:65%" class="progress-bar "></div>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">Hardware Upgrade</span>
+                      <span class="pull-right">35%</span>
+                    </div>
+
+                    <div class="progress progress-mini ">
+                      <div style="width:35%" class="progress-bar progress-bar-danger"></div>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">Unit Testing</span>
+                      <span class="pull-right">15%</span>
+                    </div>
+
+                    <div class="progress progress-mini ">
+                      <div style="width:15%" class="progress-bar progress-bar-warning"></div>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">Bug Fixes</span>
+                      <span class="pull-right">90%</span>
+                    </div>
+
+                    <div class="progress progress-mini progress-striped active">
+                      <div style="width:90%" class="progress-bar progress-bar-success"></div>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    See tasks with details
+                    <i class="icon-arrow-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="purple">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <i class="icon-bell-alt icon-animated-bell"></i>
+                <span class="badge badge-important">8</span>
+              </a>
+
+              <ul class="pull-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+                <li class="dropdown-header">
+                  <i class="icon-warning-sign"></i>
+                  8 Notifications
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-pink icon-comment"></i>
+                        New Comments
+                      </span>
+                      <span class="pull-right badge badge-info">+12</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <i class="btn btn-xs btn-primary icon-user"></i>
+                    Bob just signed up as an editor ...
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-success icon-shopping-cart"></i>
+                        New Orders
+                      </span>
+                      <span class="pull-right badge badge-success">+8</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-info icon-twitter"></i>
+                        Followers
+                      </span>
+                      <span class="pull-right badge badge-info">+11</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    See all notifications
+                    <i class="icon-arrow-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="green">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <i class="icon-envelope icon-animated-vertical"></i>
+                <span class="badge badge-success">5</span>
+              </a>
+
+              <ul class="pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+                <li class="dropdown-header">
+                  <i class="icon-envelope-alt"></i>
+                  5 Messages
+                </li>
+
+                <li>
+                  <a href="#">
+                    <img src="/avatars/avatar.png" class="msg-photo" alt="Alex's Avatar" />
+                    <span class="msg-body">
+                      <span class="msg-title">
+                        <span class="blue">Alex:</span>
+                        Ciao sociis natoque penatibus et auctor ...
+                      </span>
+
+                      <span class="msg-time">
+                        <i class="icon-time"></i>
+                        <span>a moment ago</span>
+                      </span>
+                    </span>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <img src="/avatars/avatar3.png" class="msg-photo" alt="Susan's Avatar" />
+                    <span class="msg-body">
+                      <span class="msg-title">
+                        <span class="blue">Susan:</span>
+                        Vestibulum id ligula porta felis euismod ...
+                      </span>
+
+                      <span class="msg-time">
+                        <i class="icon-time"></i>
+                        <span>20 minutes ago</span>
+                      </span>
+                    </span>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <img src="/avatars/avatar4.png" class="msg-photo" alt="Bob's Avatar" />
+                    <span class="msg-body">
+                      <span class="msg-title">
+                        <span class="blue">Bob:</span>
+                        Nullam quis risus eget urna mollis ornare ...
+                      </span>
+
+                      <span class="msg-time">
+                        <i class="icon-time"></i>
+                        <span>3:15 pm</span>
+                      </span>
+                    </span>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="inbox.html">
+                    See all messages
+                    <i class="icon-arrow-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="red">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <i class="icon-bug"></i>
+                <span class="badge badge-important">8</span>
+              </a>
+
+              <ul class="pull-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+                <li class="dropdown-header">
+                  <i class="icon-warning-sign"></i>
+                  8 Bugs updated
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-pink icon-comment"></i>
+                        New Comments
+                      </span>
+                      <span class="pull-right badge badge-info">+12</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <i class="btn btn-xs btn-primary icon-user"></i>
+                    Bob just signed up as an editor ...
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-success icon-shopping-cart"></i>
+                        New Orders
+                      </span>
+                      <span class="pull-right badge badge-success">+8</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <div class="clearfix">
+                      <span class="pull-left">
+                        <i class="btn btn-xs no-hover btn-info icon-twitter"></i>
+                        Followers
+                      </span>
+                      <span class="pull-right badge badge-info">+11</span>
+                    </div>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    See all Bug updates
+                    <i class="icon-arrow-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="light-blue">
+              <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                <!--<img class="nav-user-photo" src="/avatars/user.jpg" alt="Jason's Photo" />-->
+                &nbsp;&nbsp;&nbsp;
+                <span class="user-info">
+                  <small>Welcome,</small> {{nickname}}
+                </span>
+
+                <i class="icon-caret-down"></i>
+              </a>
+
+              <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                
+                <li>
+                  <a href="/user/user_profile">
+                    <i class="icon-user"></i>
+                    Profile
+                  </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="{{logoutUrl}}">
+                    <i class="icon-off"></i>
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul><!-- /.ace-nav -->
+        </div><!-- /.navbar-header -->
+      </div><!-- /.container -->
+    </div>
+
+    <div class="main-container" id="main-container">
+
+      <script type="text/javascript">
+      try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+      </script>
+
+      <div class="main-container-inner">
+        <a class="menu-toggler" id="menu-toggler" href="#">
+          <span class="menu-text"></span>
+        </a>
+
+        <div class="sidebar" id="sidebar">
+          <script type="text/javascript">
+          try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+          </script>
+
+          <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+            <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+              <button class="btn btn-success">
+                <i class="icon-signal"></i>
+              </button>
+
+              <button class="btn btn-info">
+                <i class="icon-pencil"></i>
+              </button>
+
+              <a href="/account"><button class="btn btn-warning">
+                <i class="icon-group"></i>
+              </button></a>
+
+              <a href="/subscription"><button class="btn btn-danger"  >
+                <i class="icon-cogs"></i>
+              </button></a>
+            </div>
+
+            <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+              <span class="btn btn-success"></span>
+
+              <span class="btn btn-info"></span>
+
+              <span class="btn btn-warning"></span>
+
+              <span class="btn btn-danger"></span>
+            </div>
+          </div>
+
+          <!-- #sidebar-shortcuts -->
+
+          <ul class="nav nav-list">
+            <li class="active">
+              <a href="/dashboard">
+                <i class="icon-dashboard"></i>
+                <span class="menu-text"> Dashboard </span>
+              </a>
+            </li>
+            <!--
+            <li>
+              <a href="/robustest/googleApp/templates/application1.html">
+                <i class="icon-text-width"></i>
+                <span class="menu-text"> Applications </span>
+              </a>
+            </li>
+          -->
+            <!-- We can add more menu links here -->
+          </ul>
+          <!-- /.nav-list -->
+
+          <div class="sidebar-collapse" id="sidebar-collapse">
+            <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+          </div>
+
+          <script type="text/javascript">
+          try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+          </script>
+          <div id="templateUnit" style="display:none">
+            <div class="" id = "template" style="padding-left:10px;padding-bottom:10px;padding-top:5px;width: 250px;">
+              <i class="icon-spin icon-spinner blue" id="statusIcon"></i>
+              <span id="testName"></span>
+              <div class="clearfix"></div>
+              <img src="/img/logo/firefox.png" style="max-width: 16px; margin-right: 5px;" class="pull-left" id="br_img">
+              <strong id="os_name"> </strong>
+              <strong class="pull-left" id="br_version"></strong>
+              <img src="/img/LINUX.png" style="max-width: 16px; margin-right: 5px; margin-left:5px;" class="pull-left" id="os_img">
+              
+
+              <div class="clearfix"></div>
+              <span class="small" id="started">Started : <abbr class="timeago" title=""></abbr></span> 
+
+              <div class="clearfix"></div>
+              <span class="small" id="duration"></span>
+
+            </div>
+          </div>
+          <div style="margin-top:50px;text-align: overflow;justify: hidden;" id="liveFeed" > 
+            <table class="table table-striped table-condensed tab-style" id="feed_table" style="overflow: auto" width=183 style='table-layout:fixed'>
+              <tbody>
+                <tr id="nofeed" style="display:none;">
+                  <td>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <div class="breadcrumbs" id="breadcrumbs">
+            <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+            </script>
+
+            <ul class="breadcrumb">
+              <li>
+                
+                <a href="#">Project</a>
+              </li>
+
+              
+             <li> <small>{{name}}</small></li>
+            </ul><!-- .breadcrumb -->
+
+            <div class="nav-search" id="nav-search">
+              <form class="form-search">
+                <span class="input-icon">
+                  <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                  <i class="icon-search nav-search-icon"></i>
+                </span>
+              </form>
+            </div><!-- #nav-search -->
+          </div>
+
+          {% block main %}{% endblock %}
+        </div><!-- /.main-container -->
+        <!-- basic scripts -->
+
+        <!--[if !IE]> -->
+
+        <script type="text/javascript">
+        window.jQuery || document.write("<script src='/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+        </script>
+
+        <!-- <![endif]-->
+
+    <!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+if("ontouchend" in document) document.write("<script src='/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+</script>
+
+
+<!-- page specific plugin scripts -->
+
+    <!--[if lte IE 8]>
+      <script src="/js/excanvas.min.js"></script>
+      <![endif]-->
+
+      <script src="/js/jquery-ui-1.10.3.custom.min.js"></script>
+      <script src="/js/jquery.ui.touch-punch.min.js"></script>
+      <script src="/js/jquery.slimscroll.min.js"></script>
+      <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+
+      <!-- ace scripts -->
+
+      <script src="/js/ace-elements.min.js"></script>
+      <script src="/js/ace.min.js"></script>
+
+
+      <script src="/js/jquery.watable.js"></script>
+
+      <script src="/js/bootstrap-editable.js"></script>
+
+
+      <!-- inline scripts related to this page -->
+      <script>
+    // set client id
+    client_id = '{{client_id}}';
+    channel_key = '{{channel_key}}';
+
+    </script>
+
+
+    <script>
+    //highLight
+      $.fn.animateBackgroundHighlight = function(highlightColor, duration)
+      {
+        var highlightBg = highlightColor || "#FFFF9C";
+        var animateMs = duration || 2500;
+        var originalBg = this.css("backgroundColor");
+        console.dir(this);
+        console.log('originalBg ' + originalBg);
+        var element = this;
+        element.css("background-color", highlightBg);
+        
+        this.animate({backgroundColor:highlightBg}, animateMs, function() {
+              element.css("background-color", originalBg);
+        });
+      }
+    // live feed click event handler
+    $(document).on("click", ".livefeedRow", function () {
+
+
+      
+      window.location = '/application?app_id=' + $(this).attr("app_id") + "#live";
+
+    });
+    /**
+    * start channel
+    **/
+    banCmd = [''];
+    function selDesiredCapabilities(desiredCapabilities){
+      var brImageUrl = '//img/logo/' + desiredCapabilities.browserName.toLowerCase() + '.png';
+      var osImageUrl = '//img/logo/' + desiredCapabilities.platform.toLowerCase() + '.png';
+      $('#liveSelBrImage').attr("src", brImageUrl);
+      $('#liveSelBrName').text(desiredCapabilities.browserName.toLowerCase());
+
+      $('#liveSelOSImage').attr("src", osImageUrl);
+      $('#liveSelOSName').text(desiredCapabilities.platform.toLowerCase());
+    };
+
+    function setLiveImage(imgUrl){
+
+      $('#liveScreenShot').attr('src', imgUrl);
+      $('#liveScreenShotFull').attr('src', imgUrl);
+
+    }
+
+    function updateSelConsole(cmd, args){
+      var data = "Executing: " + cmd + " " ;
+      if (args != null)
+        data + args
+      $("#selTextConsole").append($('<span>', { id : "tempSpanID" })
+        .addClass("sensorListItem")
+        .text(data)
+        );
+         // $("#selTextConsole")[0].scrollTop =  $('#selTextConsole')[0].scrollHeight;
+       }
+
+    /**
+    *
+    */
+    function addToLive(html){
+      var $jqueryElement = $(html);
+      $("abbr.timeago", $jqueryElement).timeago();
+      $("#feed_table tr:first").before($jqueryElement);
+    }
+    /**
+    *
+    * It will handle process related feed
+    */
+    function updateProcFeed(logData){
+
+      var html = '<tr><td><div style="width:230px;padding-bottom:10px;padding-left:10px;">' + logData.msg + '</div></td></tr>';
+      
+      // addToLive(html);
+    }
+
+    /**
+    * handle unitest feed
+    *
+    */
+    function updateUnitFeed(logData){
+      $unitDiv = $("#" + logData.testcaseresult_id);
+      if (!$unitDiv.length){
+        var curr_date = new Date();
+        $("#templateUnit").find("#started abbr").attr('title', curr_date.toISOString());
+        $("#templateUnit").find("#started abbr").data("timeago",null).timeago();
+        
+
+        //  add name 
+        $("#templateUnit").find("#testName").text(logData.ts_id + "." + logData.tc_id + " started.")
+         // add browser name
+         $("#templateUnit").find("#br_name").text(logData.browserName);
+         // add browser version
+         $("#templateUnit").find("#br_version").text(logData.version + ",");
+         // add browser img
+         $("#templateUnit").find("#br_img").attr('src', '/img/logo/' + logData.browserName+ '.png');
+         // add os name
+         $("#templateUnit").find("#os_name").text(logData.platform);
+         // add os img
+         $("#templateUnit").find("#os_img").attr('src', '/img/logo/' +logData.platform.toLowerCase() + ".png");
+
+         
+
+        // check for status
+        if (logData.status != 3){
+          // add duration 
+          $("#templateUnit").find("#duration").text("Duration: " + logData.duration + " seconds.");
+
+        }
+        if (logData.status == 1){
+          $("#templateUnit").find("#statusIcon").attr("class", "icon-ok blue");
+        }
+        else if (logData.status == 2){
+          $("#templateUnit").find("#statusIcon").attr("class", "icon-remove red");
+        }
+         
+        var templateHtml = $("#templateUnit").html() ;
+
+        $unitDiv = $('h10').attr('id', logData.testcaseresult_id);
+        $unitDiv.html(templateHtml);
+        // $unitDiv.find('tr').attr('id', logData.testcaseresult_id);
+        // add to live feed
+        var html = '<tr id="' + logData.testcaseresult_id + '" class="livefeedRow" app_id="' + logData.app_id +'"><td>' + templateHtml + "</td></tr>";
+        
+        addToLive(html);
+      }
+      else{
+        $unitDiv.find("#testName").text(logData.ts_id + "." + logData.tc_id + " completed.")
+        // add duration 
+        $unitDiv.find("#duration").text("Duration: " + logData.duration + " seconds.");
+
+        // pass fail
+        if (logData.status == 0){
+          $unitDiv.find("#statusIcon").attr("class", "icon-ok blue");
+        }
+        else if (logData.status == 1){
+          $unitDiv.find("#statusIcon").attr("class", "icon-remove red");
+        }
+        else if (logData.status == 2){
+          $unitDiv.find("#statusIcon").attr("class", "icon-warning-sign red");
+        }
+
+      }
+    }
+    /*
+    * Started test cases
+    **/
+    function handleUnitUpdate(data){
+      // screenshot
+      if(logData.hasOwnProperty('stype')){
+        if (logData.stype == 0){
+          // console.dir(logData);
+          // console.dir(logData.app_id);
+
+          var currentPass = $("#" + logData.app_id).find(".percent");
+          currentPass.text(currentPass.text() + 1);
+          var liveBeat = $("#" + logData.app_id).find(".sparkline");
+          liveBeat.attr('data-values', liveBeat.attr('data-values') + ",10, -10");
+          liveBeat.sparkline('html', {tagValuesAttribute:'data-values', type: 'line', chartRangeMin:liveBeat.data('min') || 0} );
+
+        }
+      } 
+    }
+
+    function unitStartTestcase(data){
+
+
+    }
+    if (client_id){
+      channel = new goog.appengine.Channel(channel_key);
+      socket = channel.open();
+
+      socket.onopen = function() {
+        console.log('Channel established.');
+            // console.log('id :' + client_id);
+            // console.log('key :' + channel_key);
+            //createBookGrid();
+            //getBookResult();
+
+          };
+          socket.onmessage = function(message) {
+            logData = $.parseJSON(message.data);
+            if(logData.hasOwnProperty('platform'))
+              logData.platform = logData.platform.replace('ANY', 'LINUX');
+
+            if (logData == null){
+              alert("");
+              return false;
+            }
+            // handle process related update 
+            else if ('proc' == logData.ltype){
+              updateProcFeed(logData);
+            }
+            // handle unit test related update
+            else if('unt' == logData.ltype){
+              updateUnitFeed(logData);
+            }
+            // selenium log
+            else if ('sel' == logData.ltype){
+              // screenshot
+
+              console.dir(logData);
+              if(logData.hasOwnProperty('scnSht')){
+                setLiveImage(logData.scnSht);
+              }
+              // selenium console log
+              else if(logData.hasOwnProperty('cmd')){
+                updateSelConsole(logData.cmd, logData.args);
+              }
+              
+              
+            }
+
+
+
+
+          };
+          socket.onerror = function(error) {
+            add_message('Channel error: ' + error.description);
+          };
+          socket.onclose = function() {
+            add_message('Channel closed.');
+          };
+        }
+        else{
+          console.log("no channel created.");
+        };
+
+    //add_message
+    function add_message(message) {
+      console.log(message);
+    }
+    </script>
+  </body>
+  
+
+  
+
+
+  <style>
+  table td{
+    word-wrap:break-word;
+  }
+  table td span{
+    word-wrap:break-word;
+  }
+
+  .small {
+    font-size: 10px;
+  }
+  .sidebar:before{
+    width: 261px;
+    background: #f2f2f2;
+  }
+  
+      .social-login {
+        border-radius: 100%;
+        width: 42px;
+        height: 42px;
+        line-height: 46px;
+        padding: 0px;
+        margin: 0px 1px;
+        border: 0px;
+        border-image-source: initial;
+        border-image-slice: initial;
+        border-image-width: initial;
+        border-image-outset: initial;
+        border-image-repeat: initial;
+        font-size: 24px;
+        margin: 0px;
+      }
+      .social-or-login {
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+      .social-or-login :first-child {
+        display: inline-block;
+        background: #DEB887;
+        padding: 0px 8px;
+        color: blue;
+        font-size: 13px;
+      }
+
+      .social-or-login::before {
+        content: '';
+        display: block;
+        position: absolute;
+        z-index: -1;
+        top: 50%;
+        left: 0px;
+        right: 0px;
+        border-top: 1px dotted #A6C4DB;
+        }   padding: 0 8px;
+      }
+      
+      /*.table-striped tbody > tr:nth-child(odd) > td, .table-striped tbody > tr:nth-child(odd) > th {
+          background-color: #e7e7e7;
+          border: 1px solid #e7e7e7;
+          border-radius: 2px;
+          }*/
+          
+          .sidebar table tbody tr td{
+            border: none;
+            padding-left:5px;
+          }
+          
+          .sidebar table{
+            border: none;
+          }
+          
+          .main-content{
+            margin-left: 261px;
+          }
+
+          .col-sm-12 {
+            width: 92.8%;
+            margin-left: 35px;
+          }
+          .search-query {
+            width: 25%;
+          }
+
+          .device-select {
+            font-size: 14px;
+            width: 250px;
+          }
+          #device1 {
+            margin-left: 115px;
+          }
+          #device2 {
+            margin-left: 20px;
+            }15
+            .radiobtn-align{
+             margin-right: 260px;
+           }
+           #file_choose_div{
+            margin-right: 150px;
+          }
+          .grid3 {
+           width: 25%;
+           padding: 0px 2%;
+         }
+         .grid-clearfix {
+          margin-bottom: 30px;
+          margin-left: 30px;;
+        }
+        </style>
+        
+        </html>

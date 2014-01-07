@@ -1,0 +1,3019 @@
+
+{% extends "login_layout.html" %}
+
+{% block main %}
+
+
+<div class="page-content">
+  
+  <!-- /.page-header -->
+
+  <div class="row">
+
+    <div class="col-xs-12">
+      <!-- PAGE CONTENT BEGINS -->
+      <div class="col-sm-13">
+
+        <div class="row">
+          <div class="tabbable">
+            <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="applicationTab">
+              <li class="">
+                <a data-toggle="tab" href="#overview" class="appTab" >Overview</a>
+              </li>
+              <li>
+                <a data-toggle="tab" href="#live" class="appTab" >Live</a>
+              </li>
+
+              <li>
+                <a data-toggle="tab" href="#profile" class="appTab">Profiles</a>
+              </li>
+
+              <li>
+                <a data-toggle="tab" href="#bug" class="appTab">Bugs</a>
+              </li>
+              <li>
+                <a data-toggle="tab" href="#report" class="appTab" >Reports</a>
+              </li>
+              <li>
+                <a data-toggle="tab" href="#history" class="appTab" >Team</a>
+              </li>
+              <li>
+                <a data-toggle="tab" href="#integration" class="appTab" >Integration</a>
+              </li>
+            </ul>
+
+            <div class="tab-content">
+              <!-- overview div-->
+              <div id="overview" class="tab-pane in active">
+                <div class="row">
+                  <div class="col-xs-6" style="border:1px solid lightgrey; ">
+
+                      <script type="text/javascript">
+                      google.load("visualization", "1", {packages:["corechart"]});
+                      google.setOnLoadCallback(drawChart);
+                      function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                          ['Time', 'Pass', 'Fail', 'Total'],
+                          {% for instance in lastFewInstance['instance'] %}
+                            ["{{instance['lastUpdated']}}",{{instance['ps']}}, {{instance['fl']}}, {{instance['ps'] + instance['fl']}} ],
+                          {%endfor%}
+                          ]);
+
+                        var options = {
+                          title: 'Test Execution Summary Report',
+                          colors:['green', 'red', 'black', 'yellow']
+                        };
+
+                        var chart = new google.visualization.LineChart(document.getElementById('TestExecutionSummaryChart'));
+                        chart.draw(data, options);
+                      }
+                      </script>
+                      <div id="TestExecutionSummaryChart" ></div>
+
+                    </div>
+
+                    <div class="col-xs-6"style="border:1px solid lightgrey; ">
+
+                      <script type="text/javascript">
+                      google.load("visualization", "1", {packages:["corechart"]});
+                      google.setOnLoadCallback(drawChart);
+                      function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                          {% for testcase in lastInstanceTestcase %}
+                            ['', 0],
+                            {% if testcase["status"] == 1 %}
+                              ["{{testcase['ts_id']}}.{{testcase['tc_id']}}", {{testcase['duration']}}],
+                              
+                            {% elif testcase["status"] == 2 %}
+                              
+                              ["{{testcase['ts_id']}}.{{testcase['tc_id']}}",-{{testcase['duration']}}],
+                            {% endif %}
+                          {% endfor %}
+
+                          ]);
+
+                        var options = {
+                          hAxis: {title: 'Testcase'},
+                          bar:  {groupWidth:"2%"},
+                          title: 'Test Result Report - Last Run',
+                          isStacked: true,
+                        };
+                        var view = new google.visualization.DataView(data);
+                        view.setColumns([0, 
+                          {
+                              type: 'number',
+                              label: 'Pass',
+                              calc: function (dt, row) {
+                                  return (dt.getValue(row, 1) > 1) ? dt.getValue(row, 1) : null;
+                              }
+                          }, {
+                              type: 'number',
+                              label: 'Fail',
+                              calc: function (dt, row) {
+                                  return (dt.getValue(row, 1) < 1) ? -dt.getValue(row, 1) : null;
+                              }
+                          }
+                        ]);
+    
+
+                        var chart = new google.visualization.ColumnChart(document.getElementById('histogram'));
+                        chart.draw(view, options);
+                      }
+                      </script>
+
+                      <div id="histogram"></div>
+
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-6"style="border:1px solid lightgrey;">
+
+                      <script type="text/javascript">
+                      google.load("visualization", "1", {packages:["corechart"]});
+                      google.setOnLoadCallback(drawChart);
+                      function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                          ['Reason', 'Count'],
+                          {% for erroType in bugData %}
+                            ["{{erroType}}", {{bugData[erroType]}}],
+                          {%endfor%}
+                          
+                          ]);
+
+                        var options = {
+                          title: 'Failed Test case - Based on Last run',
+                          pieSliceText: 'label',
+
+                          pieHole: 0.4,
+                          is3D: true,
+                          slices: { 1: {offset: 0.2},
+                                    2: {offset: 0.3},
+                                    3: {offset: 0.1},
+                                  },
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+                        chart.draw(data, options);
+                      }
+                      </script>
+                      <div id="donutchart"></div>
+
+                    </div>
+
+                    <div class="col-xs-6"style="border:1px solid lightgrey;">
+
+                      <script type="text/javascript">
+                      google.load("visualization", "1", {packages:["corechart"]});
+                      google.setOnLoadCallback(drawChart);
+                      function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                          ['Year', 'Sales', 'Expenses'],
+                          ['2004',  1000,      400],
+                          ['2005',  1170,      460],
+                          ['2006',  660,       1120],
+                          ['2007',  1030,      540]
+                          ]);
+
+                        var options = {
+                          title: 'Company Performance',
+                          vAxis: {title: 'Year',  titleTextStyle: {color: 'red'}}
+                        };
+
+                        var chart = new google.visualization.BarChart(document.getElementById('chart_div1'));
+                        chart.draw(data, options);
+                      }
+                      </script>
+                      <div id="chart_div1"></div>
+
+                    </div>
+                  </div>
+
+                </div>
+                <!-- end-->
+
+                <div id="live" class="tab-pane"><!-- Tab1 -->
+                  <table style="width: 100%">
+                    <tr>
+                      <td>
+
+
+                       <!-- added for live text   start-->
+                       <div class="tabbable tabs-left">
+                        <ul class="nav nav-tabs" id="myTab3">
+                          <li class="active">
+                            <a data-toggle="tab" href="#home3">
+                              <i class="pink icon-dashboard bigger-110"></i>
+                              Current Run
+                            </a>
+                          </li>
+
+
+                        </ul>
+
+                        <div class="tab-content">
+                          <div id="home3" class="tab-pane in active">
+                            <div class="col-xs-9">
+
+                              <!--live starts here-->
+                              <div id="liveconsole" class="tab-pane  active" style="border-right:1px solid #C0C0C0; height:400px">
+                                <!--Live Console-->
+
+
+
+                                <img id="liveScreenShot" src="" class="col-xs-12" style="max-height:250px">
+
+                              </div></div>
+
+                              <div class="col-xs-3" style="height:400px">
+                                <div id="selTextConsole">
+                                </div>
+                                <!-- end-->
+                              </div>
+                            </div>
+
+                          </div>
+                          <!--end-->
+
+                        </td>
+
+
+                      </tr>
+
+                    </table>
+
+
+                  </div>
+
+                  <div id="profile" class="tab-pane">
+                    <!--second tab-->
+
+                    <div class="row">
+                      <div class="col-xs-12">
+
+                        <div class="table-responsive">
+                          <table id="bugSummaryTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                              <tr>
+                                <th class="left" colspan="9">
+                                  <input type="text" class="search-query"  placeholder="Type your query" id="bugsearchbar"/>&nbsp;&nbsp;
+                                  <button type="button" class="btn btn-primary btn-sm">Search<i
+                                    class="icon-search icon-on-right bigger-110"></i></button>
+                                    <button type="button" data-toggle="modal" data-target="#modalNewProfile" class="btn btn-primary btn-sm" >New Test Profile</button>
+
+
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <th class="center">
+                                    #
+                                  </th>
+                                  <th>Name</th>
+                                  <th>Os/Browser</th>
+                                  <th>
+                                    <i class="icon-time bigger-110 hidden-480"></i>
+                                    Run Cycle
+                                  </th>
+                                  <th class="hidden-480">Pass</th>
+                                  <th>Fail</th>
+                                  <th>Error</th>
+                                  <th>Last Run</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% if testprofile %}
+                                <script>
+                                jQuery(document).ready(function($){
+                                 $("abbr.timeago").timeago();
+
+                               });
+                        //  Test profile row click event handler
+                        $(document).on("click", ".testprofileRow", function () {
+                           var myProfileId = $(this).data('id');
+                           $("#modalProfile #testprofile_id").val( $(this).data('id'));
+                           $("#modalProfile .modal-title").text( $(this).data('name'));
+                           $("#modalProfile .env").html($(this).find(".env").html());
+                          });
+
+                        // $('#example').tooltip(options)
+
+                        </script>
+                        {% for profile in testprofile %}
+                        <tr class="testprofileRow" id="{{profile["testprofile_id"]}}" data-toggle="modal" data-id="{{profile["testprofile_id"]}}" data-name = "{{profile.name}}" data-target="#modalProfile" data-toggle="tooltip" title="Click to start or shedule testing.">
+                          <td class="center">
+
+                          </td>
+                          <td>
+                            {{profile.name}}
+                          </td>
+                          <td>
+                            <ol class="env" style="line-height: 2;" start=1>
+                            {% for env in profile['env'] %}
+
+                              <li>
+                                <img src="/img/logo/{{env['browserName']}}.png"
+                                style="max-width: 18px; margin-right: 5px;margin-top:2px;" class="pull-left">
+                               
+                                <strong> {{env['os_version']}} </strong>
+                                <strong class="pull-left"> {{env['version']}}, </strong>
+                                <img src="/img/{{env['os']}}.png" style="max-width: 18px; margin-right: 5px;margin-top:2px;margin-left:5px;"
+                                class="pull-left">
+                              </li>
+                              {% endfor %}
+                            </ol>
+
+
+                          </td>
+                          <td>{{profile['runcount']}}</td>
+                          <td>{{profile['ps']}}</td>
+                          <td>{{profile['fl']}}</td>
+                          <td>{{profile['er']}}</td>
+
+                          <td><abbr class="timeago" title="{{profile['lastUpdated']}}"></abbr></td>
+                          <td>
+
+
+                            <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+                              <button class="btn btn-xs btn-success">
+                                <i class="icon-ok bigger-120"></i>
+                              </button>
+                              <button class="btn btn-xs btn-info">
+                                <i class="icon-edit bigger-120"></i>
+                              </button>
+                              <button class="btn btn-xs btn-danger">
+                                <i class="icon-trash bigger-120"></i>
+                              </button>
+                              <button class="btn btn-xs btn-warning">
+                                <i class="icon-flag bigger-120"></i>
+                              </button>
+                            </div>
+                            <div class="visible-xs visible-sm hidden-md hidden-lg">
+                              <div class="inline position-relative">
+                                <button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+                                  <i class="icon-cog icon-only bigger-110"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
+                                  <li>
+                                    <a class="tooltip-info" title="" data-rel="tooltip" href="#"
+                                    data-original-title="View">
+                                    <span class="blue">
+                                      <i class="icon-zoom-in bigger-120"></i>
+                                    </span>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="tooltip-success" title="" data-rel="tooltip" href="#"
+                                  data-original-title="Edit">
+                                  <span class="green">
+                                    <i class="icon-edit bigger-120"></i>
+                                  </span>
+                                </a>
+                              </li>
+
+                            </ul>
+                          </div>
+                        </div>
+
+
+                      </td>
+
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!--second tab end here-->
+        </div>
+
+        <div id="bug" class="tab-pane">
+          <!--third tab starts here-->
+          <div class="row" id="bugsdetailsdiv" style="display:none; ">  
+            <span id="title" data-pk="1" data-url="/post" style="font-size:21px;font-weight: normal;padding-left:10px;word-break: break-word;",Helvetica,Arial,sans-serif;"></span> 
+            <button type="button" id="backToBugs" class="btn btn-primary btn-sm pull-right" style = "margin-right:10px">Back to Bugslist</button>
+            <div class="row"></div>
+          
+          
+      
+
+<!--jera template-->
+
+<div id="bugView" style="margin-left:50px;">
+  <div clss="row">
+<p>
+<button class="bugsbutton"><i class="icon-pencil align-top bigger-125"></i> &nbsp;Edit </button>
+<a  href="#commentbox1"><button  id="commentbox1" class="bugsbutton">Comment</button></a>
+<button class="bugsbutton">Assign</button>
+<button >Resolve Issue</button>
+</p>
+  </div>
+  <div class="space"></div>
+<div class="row">
+<div class="col-xs-7">
+                     
+<p class="lineheader"><span>Details</span></p>
+<div class="row">
+<div class="" id="bugsdetails1" style="margin-left:25px;"></div>
+
+       <div class="" id="bugsdetails2" style="margin-left:35px;" ></div> 
+     </div>
+</div>
+<div class="col-xs-4">
+ <p class="lineheader"><span>People</span></p>
+ <div id="bugsdetails3" style="margin-left:25px;"></div>
+  </div>
+</div>
+<div class="space"></div>
+<div class="space"></div>
+<div class="row">
+<div class="col-xs-7">
+<p class="lineheader"><span>Description</span></p>                     
+<div id="bugsdetails4" style="margin-left:25px;"></div>
+</div>
+<div class="col-xs-4">
+  <p class="lineheader"><span>Dates</span></p> 
+  <div id="bugsdetails5" style="margin-left:25px;"></div>
+  </div>
+</div>
+<div class="space"></div>
+<div class="space"></div>
+<div class="row">
+<div class="col-xs-11">
+ <p class="lineheader"><span>Attachments</span></p>                     
+<div id="attachement"  style=""></div>
+</div>
+</div>
+<div class="space"></div>
+<div class="row">
+  <div class="col-xs-7">
+  <p class="lineheader"><span>Activity</span></p> 
+</div>
+</div> 
+</div>
+
+
+<!-- comments box starts-->
+
+
+<div class="col-sm-12" >
+<div class="tabbable">
+<ul id="myTab" class="nav nav-tabs">
+<li class="active">
+<a href="#allcomments" data-toggle="tab">All</a>
+</li>
+<li>
+<a href="#comments" data-toggle="tab">Comments</a>
+</li>
+<li>
+<a href="#comments" data-toggle="tab">Worklog</a>
+</li>
+<li>
+<a href="#comments" data-toggle="tab">History</a>
+</li>
+<li>
+<a href="#comments" data-toggle="tab">Activity</a>
+</li>
+<li>
+<a href="#comments" data-toggle="tab">Commits</a>
+</li>
+
+</ul>  
+<div class="tab-content" style="margin-top:10px; border:none; display:none;" id="commentboxdiv">
+<div id="allcomments" class="tab-pane in active">
+  Comment
+<textarea class="form-control" id="form-field-8" placeholder="Default Text" style="width:100%; height:100px;"></textarea>
+<div class="space"></div>
+<button>Add</button>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- comments box end-->
+
+
+
+<!-- jeera template  end -->
+
+     </div>
+          <div class="row">
+            <div id="response"></div>
+
+ <div id="projectResponse"></div>
+
+
+            <div class="col-xs-12" id="bugstable">
+
+              <div class="table-responsive">
+                <table id="bugSummary" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th class="left" colspan="9">
+                        <input type="text" class="search-query" style="width:40%;"placeholder="Type your query"/>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-primary btn-sm">Search<i
+                          class="icon-search icon-on-right bigger-110"></i></button>
+                          
+                            <button type="button" data-toggle="modal" data-target="#modalbugs" class="btn btn-primary btn-sm" style="margin-left:36%;">New Bug</button>
+                            
+                        </th>
+                      </tr>
+                     <tr>
+                    </thead>
+                    <tbody id="bugsreporttable">
+                      
+                    </tbody>
+                  </table>
+                  <div id="bugList"></div>
+                </div>
+              </div>
+            </div>
+
+            <!--third tab ends here-->
+          </div>
+          <div id="report" class="tab-pane">
+            <div id="reportSummary">
+             
+              <h3>Report for Last 10 Runs</h3>
+              <table id="sample-table-1" class="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Browser</th>
+                    <th>Version</th>
+                    <th>OS</th>
+                    <th>Pass</th>
+                    <th>Fail</th>
+                    <th>Total</th>
+                    <th><i class="icon-user bigger-150 green"></i></th>
+                    <th><i class="icon-time bigger-150 yellow"></i></th>
+                 </tr>
+               </thead>
+               <tbody>
+                {% for instance in lastFewInstance['instance'] %}
+                <tr id="{{instance['instance_id']}}" class="instanceSummary">
+                  <td>{{instance['br']}}</td>
+                  <td>{{instance['vs']}}</td>
+                  <td>{{instance['os']}}</td>
+                  <td>{{instance['ps']}}</td>
+                  <td>{{instance['fl']}}</td>
+                  <td>{{instance['ps'] + instance['fl']}}</td>
+                  <td>{{teammates[instance['user_id']]}}</td>
+                  <td>
+                      <abbr class="timeago" title="{{instance['lastUpdated']}}"></abbr></td>                  
+                </tr>
+                {%endfor%}
+              </tbody>
+          </table>
+        </div>
+        <!-- instance based report -->
+
+        <div id="instanceReport"style="display:none;">
+          
+          <button type="button" id="backToSummary" class="btn btn-primary btn-sm">Back to Summary</button>
+          <div class="space-6"></div>
+          <div id="throbber" style="text-align:center;">
+            <i class="icon-spin icon-spinner blue bigger-290"></i>
+          </div>
+          <div class="template">
+            <div id="instanceReportSuccess" class="alert alert-success" style="text-align:center;display:none"></div>
+            <div id="instanceReportError" class="alert alert-warning" style="display:none;text-align:center;"></div>
+            <table class="table table-striped table-bordered table-hover" id="instanceReportTable">
+              <thead>
+                <th>#</th>
+                <th>Test Suite</th>
+                <th>Testcase</th>
+                <th>Status</th>
+                <th>Duration</th>
+                <th>Completed <i class="icon-time bigger-110"></i></th>
+              </thead>
+              <tbody id="instanceReportTableTbody">
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+      <div id="history" class="tab-pane">
+        <!--fifth tab(team tab) strats-->
+             
+
+          <div class="row">
+            <div class="col-xs-12">
+               <div class="table-responsive">
+                  <table id="bugSummaryTable" class="table table-striped table-bordered table-hover">
+                    <thead>
+                      <tr>
+                      <th class="left" colspan="9">
+                      <input type="text" class="search-query"  placeholder="Type your query" id="bugsearchbar"/>&nbsp;&nbsp;
+                      <button type="button" class="btn btn-primary btn-sm">Search<i
+                                    class="icon-search icon-on-right bigger-110"></i></button>
+                      <button type="button" data-toggle="modal" data-target="#modalteam" class="btn btn-primary btn-sm" >Invite</button>
+                      </th>
+                      </tr>
+                      <tr>
+                      <th class="center">Email</th>
+                      <th>Name</th>
+                      <th>Status</th>
+                      <th>Created Date</th>
+                      <th>Last Update</th>
+                      </tr>
+                    </thead>
+                    <tbody>    </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+        <!--team tab end-->
+        </div>
+  <!--integration tab-->
+    <div id="integration" class="tab-pane">
+    
+    </div>
+
+  <!--integration tab  end-->
+    </div>
+  </div>
+</div>
+</div>
+<!-- PAGE CONTENT ENDS -->
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
+</div><!-- /.page-content -->
+
+</div><!-- /.main-content -->
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalProfile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+
+        <div id="successRun" class="alert alert-success" style="text-align:center;display:none"></div>
+        <div id="errorRun" class="alert alert-error" style="display:none;text-align:center;"></div>
+
+        <!-- body of popup -->
+        <h3>OS/Browser </h3>
+        <ol class="env">
+        </ol>
+        <form id="testprofile_form">
+          <input id="testprofile_id" type="hidden" name="testprofile_id"/>
+
+          <!-- script for radio button end here-->
+
+          <div>Select Run Mode</div></br>
+          <p>
+            <input type="radio" checked="checked" name="r1" id="e1" onchange="show2()"/>&nbsp;Run now&nbsp;&nbsp;&nbsp;
+            <input type="radio"  name="r1" onchange="show(this.value)"/>&nbsp;Schedule
+          </p>
+
+          <!-- second radio button div -->
+          <div id="sh33"  style="display:none;">
+            <br>
+
+            <span>Run on:
+             <select onchange="#">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="once">once</option>
+            </select></span><br><br>
+
+            <label>Select Date & Time</label>
+            <div class="row">
+              <div class="col-xs-12 col-lg-6">
+
+                <div class="input-group bootstrap-timepicker">
+                  <input id="timepicker2"  type="text" class="form-control" />
+                  <span class="input-group-addon">
+                    <i class="icon-time bigger-110"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="col-xs-12 col-lg-6">
+
+                <div class="input-group">
+                  <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy" />
+                  <span class="input-group-addon">
+                    <i class="icon-calendar bigger-110"></i>
+                  </span>
+                </div>
+
+              </div>
+            </div><br>
+
+
+            Repeat <input type="text" class="span3" placeholder="">&nbsp;&nbsp;&nbsp;Times
+
+          </div>
+          <!-- second radio button end here -->
+
+          <!-- first radio button div -->     
+          <div id="sh2">   <!--for first radio button--></div>
+
+        </form>
+      </div>
+      <!--  pop up body  end here-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="testprofile_run">Run</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Modal -->
+
+
+
+<!--bugs popup-->
+
+<div class="modal fade" id="modalbugs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:1000px"">
+      <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+       
+
+        <h4 class="modal-title">Create New Bug</h4>
+      </div>
+      <div class="modal-body">
+      <!-- popup body-->
+     
+                      
+        <form class="form-horizontal" role="form" id="bugsform">
+       <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Title </label>
+        <div class="col-sm-9">
+         <input id="title" name="title" class="col-xs-10 col-sm-7" type="text" placeholder="Bug Title">
+        </div>
+       </div> 
+
+
+       
+         <input id="kind" value="bugs#bug" name="kind" type="hidden">
+         <input id="project" value="{{id}}" name="project" type="hidden">
+     
+
+        <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Assigned To </label>
+        <div class="col-sm-9">
+         <input id="assigned" name="assigned" class="col-xs-10 col-sm-7" type="text" placeholder="Assigned To">
+        </div>
+       </div> 
+
+
+       
+
+       <!-- Select Basic -->
+       <div class="form-group">
+       <label class="col-sm-3 control-label no-padding-right" for="priority">Prirority</label>
+        <div class="col-sm-9">
+         <select id="priority" name="priority" class="col-xs-10 col-sm-7">
+          <option value="major">MAJOR</option>
+          <option value="blocker">BLOCKER</option>
+           <option value="minor">MINOR</option>
+           <option value="critical">CRITICAL</option>
+            <option value="trivial">TRIVIAL</option>
+           
+           </select>
+           </div>
+           </div>
+
+           <div class="form-group">
+       <label class="col-sm-3 control-label no-padding-right" for="priority">Type of bug</label>
+        <div class="col-sm-9">
+         <select id="type" name="type" class="col-xs-10 col-sm-7">
+          <option value="bug">BUG</option>
+          <option value="task">TASK</option>
+           <option value="new feature">NEW_FEATURE</option>
+           <option value="improvement">IMPROVEMENT</option>
+            <option value="epic">EPIC</option>
+            <option value="story">STORY</option>
+           
+           </select>
+           </div>
+           </div>
+
+           <div class="form-group">
+          <label class="col-sm-3 control-label no-padding-right" for="bugsummary">Description</label>
+          <div class="col-sm-9">                     
+            <textarea id="summary" name="summary" class="col-xs-10 col-sm-7" style="height:100px;">bug Description</textarea>
+               </div>
+          </div>
+
+
+  </form>
+
+     
+      <!--  pop up body  end here-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="createnewbug">Save</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+<!-- Modal -->
+</div>
+<!-- bugs popup ended-->
+
+<!-- new  opoup added-->
+
+
+<div class="modal fade" id="modalcase" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+       <div class="row">
+        <div class="col-xs-6" id="testcasedetails1" style="width:40%; margin-left:150px; margin-top:30px;"></div>
+        <div class="col-xs-6" id="testcasedetails2" style="width:40%;"></div>
+       </div>
+
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+
+        <div id="successRun" class="alert alert-success" style="text-align:center;display:none"></div>
+        <div id="errorRun" class="alert alert-error" style="display:none;text-align:center;"></div>
+
+         <div id="logdetails">
+          <table class="table table-striped table-bordered table-hover" id="logdetailsTable">
+            <tbody id="logdetailsTableBody"></tbody>
+          </table>
+
+         </div>
+      <!--  pop up body  end here-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="testprofile_run">Run</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+<!-- Modal -->
+</div>
+<!-- new popup ended-->
+
+<!-- team add popup-->
+
+<div class="modal fade" id="modalteam" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+       
+
+        <h4 class="modal-title"> add team</h4>
+      </div>
+      <div class="modal-body">
+
+        
+      <form class="form-horizontal" role="form" >
+        <!--name-->
+       <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Name </label>
+        <div class="col-sm-9">
+         <input id="name" name="name" class="col-xs-10 col-sm-7" type="text" placeholder="name">
+        </div>
+       </div> 
+      <!-- email-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Email </label>
+        <div class="col-sm-9">
+         <input id="email" name="name" class="col-xs-10 col-sm-7" type="text" placeholder="Email">
+        </div>
+       </div> 
+
+     </form>
+         
+          
+
+         </div>
+      <!--  pop up body  end here-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" >Send Invite</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+</div>
+
+<!-- team add popup ended-->
+
+
+
+
+
+
+<!-- Modal New profile -->
+<div class="modal fade" id="modalNewProfile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Create New Test Profile</h4>
+      </div>
+      <div class="modal-body">
+
+        <div id="successCreate" class="alert alert-success" style="text-align:center;display:none"></div>
+        <div id="errorCreate" class="alert alert-error" style="display:none;text-align:center;"></div>
+        <div>
+          <input id="testprofileName" name="name" class="input-xlarge" type="text" placeholder="Test Profile Name" value="Test Profile Name"/>
+        </div>
+        <div class="space-10"></div>
+        <!-- os -->
+
+
+
+        <div class="pulldown-large pull-left first" id="pulldown-os-big" tabindex="2">
+          <div style="margin-bottom:5px;"><strong>1. Select an OS</strong>
+          </div>
+
+          <div class="first normal" id= "os_menu"  data-toggle="menu" data-target="#mnu-os-big"><span class="icon win7"></span> <a id="selectedOS">Windows</a><a style="padding-left:5px;" id="osVersion">8</a>
+          </div>
+          <div class="menu" id="os_menu_list" style="display:none;">
+            
+            <!-- <span class="pointer-arrow"><img src="/img/menu-top-arrow.png"></span> -->
+            <!-- starts -->
+            <div style="width:200px;">
+             <span class="title first-child" >Desktop</span>
+             <ul class="items">
+               <li class="os_li" id="linux"><a ><img class="icon" src="/img/linux.png">Linux</a></li>
+               <li class="os_li" id="winxp"><a><span class="icon winxp"></span>Windows XP</a></li>
+               <li class="os_li" id="win7" ><a ><span class="icon win7"></span>Windows 7</a></li>
+               <li class="os_li" id="win8" ><a ><span class="icon win8"></span>Windows 8</a></li>
+               <li class="os_li" id="macsl"><a ><span class="icon apple"></span>OS X Snow Leopard</a></li>
+               <li class="os_li" id="maclion"><a ><span class="icon apple"></span>OS X Lion</a></li>
+               <li class="os_li" id="macml" ><a ><span class="icon apple"></span>OS X Mountain Lion</a></li>
+             </ul>
+           </div>
+           <!-- end-->
+
+           <!-- starts -->       
+           <div style="width:200px;">
+             <span class="title last">Mobile &amp; Tablet Emulators</span>
+             <ul class="items last-child">
+               <li class="mob_os_li"  id="homeos-ios"><a href=""><span class="icon ios"></span>iOS<br><span class="desc">Mobile Safari</span></a></li>
+               <li class="mob_os_li" id="homeos-android"><a href=""><span class="icon android"></span>Android<br><span class="desc">Android Browser</span></a></li>
+             </ul>
+           </div>   <!-- end-->
+
+
+
+         </div>
+       </div>
+       <!-- end-->
+
+       <!-- starts-->
+
+       <div class="pulldown-large pull-left" id="pulldown-browser-big" tabindex="3">
+        <div style="margin-bottom:5px;"><strong>2. Select a browser</strong>
+        </div>
+        <div class="first normal" id="browser_dropdown"  data-toggle="menu" data-target="#browser_menu">
+          <span class="icon ie"></span>
+          <a id="selectedBr">
+            <span class="browserName" style="text-transform:capitalize;">Ie</span>
+            <span class="browserVersion">10</span>
+          </a>
+        </div>
+        <div class="menu" id="browser_menu_list" style="left:1px;display:none">
+          <span class="pointer-arrow" style="left: 30px;"></span>
+          
+          
+        </div>
+      </div>&nbsp;&nbsp;&nbsp;&nbsp;
+      <button type="button"  class="btn btn-primary btn-sm" id ="os-br-btn"style="margin-top:27px">ADD</button>
+      <div id="os-br-val">
+
+      </div>
+      <div id="tempBrTabDiv" style="display:none">
+        <span class="browserIcon" id="browserIcon" style="margin-top: 6px;margin-left: 9px;"></span>
+
+        <span class="title browserName" id="browserName"  style="text-transform:capitalize;">IE</span>
+      </div><br>
+
+      <div id="myDisp">
+        <table style="display:none" id="templateOsBr">
+          <tr>
+            <td id="selectedCount"></td>
+            <td><img id="brIcon" src="/img/logo/firefox.png" style="max-width: 18px;"><strong id="version"> 23, </strong></td>
+            <td><img id="osIcon" src="/img/LINUX.png" style="max-width: 18px; margin-right: 5px;"><strong id="selectedOSVersion"> LINUX </strong></td>
+            <td class="delete"><i class="icon icon-trash" rel="tooltip" title="Click to remove "></i></td>
+          </tr>
+        </table>
+        <table id="selectedOSBrList" class="able table-striped table-bordered table-hover">
+          <thead>
+            <tr>
+              <td>#</th>
+              <th>Browser</th>
+              <th>Os</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody >
+          </tbody>
+        </table>
+        
+        </ol>
+      </div>
+      <!-- end
+      <!-- starts-->
+
+      <div>Select Run Mode</div></br>
+      <script type="text/javascript">
+      function show(str){
+        document.getElementById('sh2').style.display = 'none';
+        document.getElementById('sh33').style.display = 'block';
+        $("#testprofile_create").text("Schedule");
+        $("#testprofile_run").text("Schedule");
+      }
+      function show2(sign){
+        document.getElementById('sh2').style.display = 'block';
+        document.getElementById('sh33').style.display = 'none';
+        $("#testprofile_create").text("Run");
+        $("#testprofile_run").text("Run");
+      }
+      </script>
+      <p>
+        <input type="radio" checked="checked" name="r1" id="e1" onchange="show2()"/>&nbsp;Run now&nbsp;&nbsp;&nbsp;
+        <input type="radio"  name="r1" onchange="show(this.value)"/>&nbsp;Schedule
+      </p>
+
+      <!-- second radio button div -->
+      <div id="sh33"  style="display:none;">
+        <br>
+
+        <span>Run on:
+         <select onchange="#">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="once">once</option>
+        </select></span><br><br>
+
+        <label>Select Date & Time</label>
+        <div class="row">
+          <div class="col-xs-12 col-lg-6">
+
+            <div class="input-group bootstrap-timepicker">
+              <input id="timepicker2"  type="text" class="form-control" />
+              <span class="input-group-addon">
+                <i class="icon-time bigger-110"></i>
+              </span>
+            </div>
+          </div>
+          <div class="col-xs-12 col-lg-6">
+
+            <div class="input-group">
+              <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy" />
+              <span class="input-group-addon">
+                <i class="icon-calendar bigger-110"></i>
+              </span>
+            </div>
+
+          </div>
+        </div><br>
+
+
+        Repeat <input type="text" class="span3" placeholder="">&nbsp;&nbsp;&nbsp;Times
+
+      </div>
+      <!-- second radio button end here -->
+
+      <!-- first radio button div -->     
+      <div id="sh2">   <!--for first radio button--></div>
+
+
+      <!-- browser -->
+
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary" id="testprofile_create">Run</button>
+    </div>
+  </div>
+</div>
+</div>
+<!-- /.main-container-inner -->
+<!--  profile popup  strarts  here-->
+
+
+
+<!-- Modal -->
+
+<!-- modal profile end here -->         
+
+<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+  <i class="icon-double-angle-up icon-only bigger-110"></i>
+</a>
+<style>
+.tab-style{
+  margin-bottom: 205px;
+}
+.table-hover tbody tr:hover > td {
+  cursor: pointer
+}
+.modal-dialog {
+  width: 860px;
+  padding-bottom: 30px;
+  padding-top: 30px;
+  right: auto;
+}
+
+select {
+  height: 30px;
+  padding: 3px 4px;
+  width:200px;
+}
+.mob_os_li {
+  opacity: 0.4;
+}
+
+</style>
+
+
+
+<!-- javascript show profile based on # -->
+
+<script type="text/javascript" charset="utf-8">
+  /**
+  * this will generate instance report.
+  **/
+  function generateInstanceReport(data){
+    
+    var testcaseList = $.parseJSON(data);
+    var rowTemplate = "";
+    $("#instanceReportTableTbody").empty();
+    $.each(testcaseList, function (i, testcase) {
+      console.dir(testcase);
+      if (testcase.status == 1){
+        testcase.status = "Pass";
+      }
+      else{
+        testcase.status = "Fail";
+      }
+
+      rowTemplate = '<tr class="testcaseResultRow" id="' + testcase.id + '" >' 
+                    + "<td>" + (i+1) +"</td>"
+                    + "<td>" +testcase.ts_id +"</td>"
+                    + "<td>" +testcase.tc_id +"</td>"
+                    + "<td>" +testcase.status +"</td>"
+                    + "<td>" +(testcase.completed -testcase.created) +"</td>"
+                    +'<td><abbr class="timeago" title="' + testcase.completedAt + '"></abbr></td>'
+                    + "</tr>";
+      $("#instanceReportTableTbody").append(rowTemplate);
+      console.dir(testcase);
+    });
+    // time ago
+    jQuery(document).ready(function($){
+     $("abbr.timeago").timeago();
+
+    });
+
+  }
+  var tabs = $("#applicationTab li");
+  var hash = window.location.hash;;
+      hash && tabs.find('[href=' + hash + ']').tab('show');
+  // instance row 
+  $(".instanceSummary").click(function(){
+    // hide table 
+    $("#reportSummary").hide();
+    $("#instanceReport").show();
+
+    $("#throbber").show()
+    $("#instanceReportTable").hide();
+
+    // abort any pending request
+    var request = null;
+    if (request) {
+      request.abort();
+    }
+    $("#errorCreate").hide();
+    $("#successCreate").hide();
+    // fire off the request to /user
+    request = $.ajax({
+      url: "/instance/" + $(this).attr("id"),
+      type: "get"
+
+    });
+    // callback handler that will be called on success
+    request.done(function (response, textStatus, jqXHR) {
+      console.dir(response);
+      generateInstanceReport(response);
+    });
+    // callback handler that will be called on failure
+    request.fail(function (jqXHR, textStatus, errorThrown) {
+        // log the error to the console
+        data = $.parseJSON(request.responseText);
+        console.dir(data);
+        console.error(
+          "The following error occured: " +
+          textStatus, errorThrown
+          );
+        $("#instanceReportError").text(data.msg);
+        $("#instanceReportError").show();
+        $("#instanceReportTable").hide();
+        
+    });
+    
+
+    request.always(function () {  
+      $("#throbber").hide()
+      $("#instanceReportTable").show();
+    });
+
+  });
+  // backToSummary
+  $("#backToSummary").click(function(){
+    $("#reportSummary").show();
+    $("#instanceReport").hide();
+  });
+  
+ 
+</script>
+
+<!--script for popup -->
+
+
+<script>
+
+$('#instanceReportTable').on('click', 'tr', function()
+{ 
+//on click modelpopup
+$('#modalcase').modal('show'); 
+
+ var request = null;
+    if (request) {
+      request.abort();
+    }
+    $("#errorCreate").hide();
+    $("#successCreate").hide();
+    // fire off the request to /user
+    request = $.ajax({
+      url: "/testresult/" + $(this).attr("id"),
+      type: "get"
+
+    });
+    // callback handler that will be called on success
+    request.done(function (response, textStatus, jqXHR) {
+      console.dir(response);
+     
+        generateInstanceReporte(response);   
+    });
+   
+});
+
+
+//parsing json
+function generateInstanceReporte(response){
+    
+    var reportData = $.parseJSON(response);
+    var rowTemplatee = "";
+    console.dir(reportData);
+    
+    if (reportData.status == 1){
+      reportData.status = "Pass";
+    }
+    else{
+      reportData.status = "Fail";
+    }
+    // first header box
+    rowTemplate1 = '<div class="row"><span class="testcaseHead">TestSuite : </span>' +reportData.ts_id + '<span></span></div>'
+        + '<div class="row"><span class="testcaseHead">Testcase : </span>' +reportData.tc_id + '<span></span></div>'
+        + '<div class="row"><span class="testcaseHead">Browser : </span>' +reportData.browser + "-" + reportData.version + '<span></span></div>'
+        + '<div class="row"><span class="testcaseHead">Os : </span>' +reportData.os + '<span></span></div>'
+      ;          
+      $("#testcasedetails1").empty();
+      $("#testcasedetails1").append(rowTemplate1);
+      // test case results in second div
+       rowTemplate2 = '<div class="row"><span class="testcaseHead">Status : </span>' +reportData.status + '<span></span></div>'
+        +'<div class="row"><span class="testcaseHead">Duration : </span>' +(reportData.completed - reportData.created) + 'seconds<span></span></div>'
+        +'<div class="row"><span class="testcaseHead">Started : </span>' +reportData.created + '<span></span></div>'
+        +'<div class="row"><span class="testcaseHead">Completed : </span>' +reportData.completed + '<span></span></div>'
+        ;
+         $("#testcasedetails2").empty();          
+       $("#testcasedetails2").append(rowTemplate2);
+      // log details in model body
+        rowTemplate3 = "";
+
+        $("#logdetailsTableBody").empty();
+        $.each(reportData.log.steps, function (i, step) {
+          if (step != null){
+            step = $.parseJSON(step);
+            if(step.hasOwnProperty("params")){
+              console.log(step);
+              // check for image
+              var command = "";
+              var target = "";
+              var value = ""
+              if (step.driver_command == "get"){
+                command = "opening url";
+                target = step.params.url;
+              }
+              else if (step.driver_command == "tkScnSht"){
+                command = "Screenshot ";
+                target = '<img style="width:100%" src="/serveImage?id=' +step.params.screenShot +'"></img>'; 
+              }
+              else{
+                command = step.driver_command;
+              }
+              logRow = '<tr class="testcasedetails">' 
+                  + "<td>" + command + " - " + target +"</td>"
+                + "</tr>";
+              $("#logdetailsTableBody").append(logRow);
+            }
+          }
+        });
+  
+  }
+  </script>
+<!--script for popup -->
+
+
+<!--script for popup -->
+<script>
+
+ $( document ).ready(function() {
+    
+     request = $.ajax({
+      url: "/project/{{id}}/bugs",
+      type: "get"
+
+    });
+    // callback handler that will be called on success
+    request.done(function (datam, textStatus, jqXHR) {
+        bugsreporttable(datam);   
+    });
+
+    });
+
+function toTitleCase(str) {
+    if (str == null)
+      return "";
+    return str.replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+    });
+}
+
+function truncate(str, len){
+  if (len == null)
+    len = 73;
+  if (str.length < 75)
+    return str;
+  return jQuery.trim(str).substring(0, len).split(" ").slice(0, -1).join(" ") + "...";
+}
+
+function bugsreporttable(datam){
+    $("#bugsreporttable").empty();
+    var reportDatan = $.parseJSON(datam);
+
+    var team = $.parseJSON("{{teammates}}".replace(/&#34;/g, '"'));
+    console.dir(reportDatan.bugs);
+    var bugTable = {"rows" : [],
+                    "cols": {"title": {"index": 1, "type": "string", "friendly": "Summary","filter":false},
+                             "type": {"index": 2, "type": "string", "friendly": "Type", "filter":true}, 
+                             "priority": {"index": 3, "type": "string", "friendly": "Priority", "filter":true}, 
+                             "status": {"index": 4, "type": "string", "friendly": "Status", "filter":true},
+                             "last_update": {"index": 5, "type": "string", "friendly": "Updated"},
+                             "reported_on": {"index": 6, "type": "string", "friendly": "Reported"},
+                             "assigned": {"index": 7, "type": "string", "friendly": "Assignee", "filter":true},
+                             "author_id": {"index": 8, "type": "string", "friendly": "Reporter", "filter":true},
+                             "url": {"index": 9, "type": "string", "friendly": "Link", "filter":false, "hidden":true,},
+                             "id": {"index": 10, "type": "string", "friendly": "ID", "filter":false, "hidden":true, "unique" : true,},
+
+
+                           }, 
+                           "otherStuff": {"thatYouMightNeed": 1}
+                    };
+    $.each(reportDatan.bugs, function(i,bug) {
+      bug.title = truncate(bug.title );
+      bug.type = toTitleCase(bug.type);
+      bug.priority = toTitleCase(bug.priority);
+      bug.status = toTitleCase(bug.status);
+      bug.last_update = localizeTime(bug.last_update);
+      bug.modified = localizeTime(bug.modified);
+      bug.reported_on = getDateInFormated(bug.reported_on) ;
+      bug.assigned = toTitleCase(team[bug.assigned]);
+      bug.author_id = toTitleCase(team[bug.author_id]);
+      bug["urlFormat"] = "<a href='{0}'>Page</a>";
+      bug["last_updateFormat"] = "<abbr class='timeago' title='{0}'></abbr>";
+
+      bugTable.rows.push(bug);
+    });
+    console.dir(bugTable);
+    $('#bugList').WATable(
+      {
+        // url: '/api/report/5000/filter',
+        pageSizes: [10,20,30,40,100],
+        filter: true,
+        preFill: true,
+        placeholder: false,
+        columnPicker: true,
+        hidePagerOnEmpty : true,
+
+        types: {
+                string: {
+                  placeHolder: false, //false for empty
+                  filterTooltip: "Type something..." //false to remove
+                },
+        },
+        actions: {
+            filter: true,
+            columnPicker: true,
+            
+        },
+        rowClicked : function(data){
+          shoBugDetails(data.row.id);
+        }, 
+        tableCreated: function(data) {
+          $("abbr.timeago").timeago();
+        }
+      }).data('WATable').setData(bugTable);
+
+      
+    };
+    
+
+</script>
+
+
+<script>
+
+            $("#createnewbug").click(function () {
+               
+             
+               // setup some local variables
+                var $form = $('#bugsform');
+                // let's select and cache all the fields
+                var $inputs = $form.find("input, select, button, textarea");
+                // serialize the data in the formv
+                var serializedData = $form.serialize();
+
+                
+                console.dir(serializedData);
+                // let's disable the inputs for the duration of the ajax request
+                $inputs.prop("disabled", true);
+
+                  // fire off the request to /user
+                request = $.ajax({
+                    url: "/bugs",
+                    type: "post",
+                    contentType: "application/json",
+                    data: serializedData
+                   
+                });
+                  setTimeout(function(){ location.reload(); }, 1000);
+                });
+</script>
+<script>
+ // backToBugs
+  $("#backToBugs").click(function(){
+    $("#bugstable").show();
+    $("#bugsdetailsdiv").hide();
+    $("#commentboxdiv").hide();
+  });
+  $("#commentbox1").click(function(){
+    $("#commentboxdiv").show();
+    
+  });
+
+
+$('#bugsreporttable').on('click', 'tr', function() {
+  
+  shoBugDetails($(this).attr("id"));
+});
+
+function shoBugDetails(bug_id){
+
+  $("#bugstable").hide();
+  $("#bugsdetailsdiv").show();
+
+  request = $.ajax({
+        url: "/bugs/" + bug_id,
+        type: "get"
+
+      });
+      // callback handler that will be called on success
+      request.done(function (bugsdata, textStatus, jqXHR) {
+        console.dir(bugsdata);
+       
+          generatebugsReporte(bugsdata);   
+      });
+}
+
+function localizeTime(t){
+  if (t == null)
+    return null;
+  var d=new Date(t + " UTC");
+
+  var curr_date = d.getDate();
+  var curr_month = d.getMonth() + 1;
+  var curr_year = d.getFullYear();
+  var hours = d.getHours();
+  var minutes = d.getMinutes();
+  var seconds = d.getSeconds();
+  return curr_year + "-" + curr_month + "-" + curr_date + " " + hours + ":" + minutes + ":" + seconds;
+  // return d.toString();
+};
+function getDateInFormated(date_string){
+  local_time = localizeTime(date_string);
+  if (local_time == null)
+    return "";
+  var d = new Date(local_time);
+  var m_names = new Array("Jan", "Feb", "Mar", 
+  "Apr", "May", "Jun", "Jul", "Aug", "Sept", 
+  "Oct", "Nov", "Dec");
+
+  var d = new Date(local_time);
+  var curr_date = d.getDate();
+  var sup = "";
+  if (curr_date == 1 || curr_date == 21 || curr_date ==31)
+    sup = "st";
+  else if (curr_date == 2 || curr_date == 22)
+    sup = "nd";
+  else if (curr_date == 3 || curr_date == 23)
+    sup = "rd";
+  else
+    sup = "th";
+
+  var curr_month = d.getMonth();
+  var curr_year = d.getFullYear();
+
+  var formated_date = curr_date + "<SUP>" + sup + "</SUP> " + m_names[curr_month] + " " + curr_year;
+  var hours = d.getHours();
+  var minutes = d.getMinutes();
+  var ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return formated_date  + " " + strTime;
+
+}
+
+function generatebugsReporte(bugsdata){
+    var team = $.parseJSON("{{teammates}}".replace(/&#34;/g, '"'));
+    console.dir(team);
+    $("#bugsReportTableTbody").empty();
+    var bugData = $.parseJSON(bugsdata);
+     
+    console.dir(bugData);
+    // put title 
+
+    $("#bugsdetailsdiv").find("#title").html(truncate(bugData.title,87));
+    $("#bugsdetailsdiv").find("#title").attr("value",bugData.title );
+
+    //bug details in first div
+    $("#bugsdetailsdiv").attr("bug_id", bugData.id);
+    rowTemplate1 = '<div class="row"><span class="bugshead">Type : &nbsp&nbsp&nbsp&nbsp </span><span id="type"  data-pk="1"  data-type="select" class="editable editable-click" value="' + bugData.type + '">' + toTitleCase(bugData.type) + '</span></div>'
+        + '<div class="row"><span class="bugshead">Priority : </span><span id="priority"  data-pk="1"  value="' +bugData.priority + '">' + toTitleCase(bugData.priority) + '</span></div>'
+        + '<div class="row"><span class="bugshead">Status : </span><span data-pk="1" id="status"value="' + bugData.status + '">' + toTitleCase(bugData.status) + '<span></span></div>';
+
+                
+     
+      $("#bugsdetails1").empty();
+      $("#bugsdetails1").append(rowTemplate1);
+      // bug details in second div
+       
+      $("#bugsdetails2").empty();
+      // $("#bugsdetails2").append(rowTemplate2);
+      //bug details in third div
+       rowTemplate3 = '<div class="row"><span class="bugshead" >Assignee : </span><span id="assignedTo" data-pk="1" class="editable-click" value="'+ bugData.assigned + '">' + toTitleCase(team[bugData.assigned]) + '</span></div>'
+        + '<div class="row"><span class="bugshead" >Reporter : </span><span>' + toTitleCase(team[bugData.author_id]) + '</span></div>'
+        + '<div class="row"><span class="bugshead">Last Updater : </span>' + toTitleCase(team[bugData.last_updater]) + '</span></div>';
+       
+      $("#bugsdetails3").empty();
+      $("#bugsdetails3").append(rowTemplate3);
+      //bug details in fourth div
+      rowTemplate4 = '<div class="row">' +bugData.summary + '<span></span></div>';
+      $("#bugsdetails4").empty();
+      $("#bugsdetails4").append(rowTemplate4);
+      //bug details in fifth div
+
+      rowTemplate5 = '<div class="row"><span class="bugshead">Created : </span>' +getDateInFormated(bugData.reported_on) + '<span></span></div>'
+        + '<div class="row"><span class="bugshead">Updated : </span><span id="last_update">' + getDateInFormated(bugData.last_update) + '<span></span></div>';
+        
+       
+      $("#bugsdetails5").empty();
+      $("#bugsdetails5").append(rowTemplate5);
+       //bug details in six div
+      rowTemplate6 = '<div class="row"><span class="bugshead">Estimated : </span>' +bugData.estimated + '<span></span></div>'
+        + '<div class="row"><span class="bugshead">Remaining : </span>' +bugData.remaining + '<span></span></div>'
+        + '<div class="row"><span class="bugshead">Logged : </span>' +bugData.logged + '<span></span></div>';
+        
+      $("#attachement").empty();
+      if (bugData.screenshot != null){
+        $("#attachement").append('<img class="bugScreenshot" id="bugScreenshot" style="max-width:100%; max-height:100%; width:auto;height:auto;" src="' + bugData.screenshot + '">');
+      }
+      $("#bugsdetails6").empty();
+      $("#bugsdetails6").append(rowTemplate6);
+  }
+  // make image bigger
+  $('#attachement').on('click', 'img', function(e) {
+    $(this).toggleClass('clicked');
+  });
+</script>
+
+<script>
+var osName = {
+  'winxp': {"name": "Windows" , "version": "XP"},
+  'win7': {"name": "Windows" , "version": "7"},
+  'win8': {"name": "Windows" , "version": "8"},
+  'win8.1': {"name": "Windows" , "version": "8.1"},
+  'linux': {"name": "Ubuntu" , "version": "12.04"},
+  'maclion': {"name": "OS" , "version": "X Lion"},
+  'macsl': {"name": "OS" , "version": "X Snow Leopard"},
+  'macml': {"name": "OS" , "version": "Mountain Lion"}
+}
+var defaultBroewser = {
+ 'winxp': {'browser': 'IE', 'version': '7.0'},
+ 'win7': {'browser': 'IE', 'version': '9.0'},
+ 'win8': {'browser': 'IE', 'version': '10.0'},
+ 'win8.1': {'browser': 'IE', 'version': '11.0'},
+ 'macsl': {'browser': 'Safari', 'version': '5.1'},
+ 'linux': {'browser': 'Firefox', 'version': '26.0'},
+ 'maclion': {'browser': 'Safari', 'version': '6.0'},
+ 'macml': {'browser': 'Safari', 'version': '6.0'},
+ 'ios': {'browser': 'Mobile', 'version': 'iPhone 5-6.0', },
+ 'android': {'browser': 'Mobile', 'version': 'Motorola Razr-4.0-540x960'},
+ 'opera': {'browser': 'Tablet', 'version': 'Samsung Galaxy Tab-1024x600'}
+};
+var env = {
+
+  "br_os_combi": {
+    "maclion":{"safari":["5.1","6.0"],"opera":["11.1","11.6","12.0","12.12","12.14","12.15","15.0","16.0","17.0","18.0"],"chrome":["14.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"],"firefox":["3.6","4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "linux":{"chrome":["14.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"],"firefox":["3.6","4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "macsl":{"safari":["4.0","5.0","5.1"],"opera":["11.1","11.6","12.0","12.12","12.14","12.15","15.0","16.0","17.0","18.0"],"chrome":["14.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"],"firefox":["4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "winxp":{"safari":["4.0","5.0","5.1"],"ie":["6.0","7.0","8.0"],"opera":["10.0","11.1","11.5","11.6","12.10","12.14","12.15","12.16","15.0","16.0","17.0 next","18.0"],"chrome":["14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"],"firefox":["3.0","3.6","4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "macml":{"safari":["6.0"],"opera":["11.1","11.6","12.0","12.12","12.14","12.15","15.0","16.0","17.0","18.0"],"chrome":["14.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"],"firefox":["3.6","4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "win8.1":{"safari":["5.1"],"ie":["11.0","11.0"],"opera":["12.0","12.10","12.14","12.15","12.16","15.0","16.0","17.0"],"chrome":["22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0 ","31.0"],"firefox":["16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+    "win8":{"safari":["5.1"],"ie":["10.0","10.0"],"opera":["12.0","12.10","12.14","12.15","12.16","15.0","16.0","17.0"],"firefox":["16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"],"chrome":["22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0"]},
+    "win7":{"safari":["4.0","5.0","5.1"],"ie":["8.0","9.0","10.0","11.0"],"opera":["10.0","11.1","11.5","11.6","12.10","12.14","12.15","12.16","15.0","16.0","17.0","18.0 dev"],"chrome":["14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0","27.0","28.0","29.0","30.0","31.0 dev"],"firefox":["3.0","3.6","4.0","5.0","6.0","7.0","8.0","9.0","10.0","11.0","12.0","13.0","14.0","15.0","16.0","17.0","18.0","19.0","20.0","21.0","22.0","23.0","24.0","25.0","26.0"]},
+
+    "android":{"tablet":["Amazon Kindle Fire 2-4.0-600x1024","Amazon Kindle Fire HD 8.9-4.0-1200x1920","Google Nexus 7-4.1-1280x800","Samsung Galaxy Note 10.1-4.0-800x1280"],"mobile":["Samsung Galaxy S III-4.1-720x1280","Samsung Galaxy Note II-4.1-720x1280","Samsung Galaxy Nexus-4.0-720x1280","Motorola Atrix HD-4.0-720x1280","Motorola Razr-4.0-540x960","Motorola Razr Maxx HD-4.1-720x1280","HTC Evo 3D-4.0-540x960","HTC One X-4.0-720x1280","Sony Xperia Tipo-4.0-320x480","LG Nexus 4-4.2-768x1280"]},
+    "ios":{"tablet":["iPad 2 (5.0)-5.0","iPad 3rd-5.1","iPad 3rd (6.0)-6.0","iPad Mini-6.0"],"mobile":["iPhone 4S-5.1","iPhone 4S (6.0)-6.0","iPhone 5-6.0"]}
+  },
+  "browserOrder": ["IE","Firefox","Safari","Chrome","Opera","Mobile","Tablet"]
+};
+var test_profile_json = [];
+$(document).ready(function () {
+
+  $(document).on( "click", "div", function(){} );
+  // Os_btn_event
+  
+  //var test_profile_json = {}
+
+  $( "#os-br-btn" ).click(function() {
+     //  var selected_os = $(this).attr("id");
+     var key = $.trim($("#selectedOS").text()) + $.trim($("#osVersion").text())+ $.trim($("#selectedBr").find('.browserName').text()) + $.trim($("#selectedBr").find('.browserVersion').text());
+    // check for duplicate
+    console.dir(JSON.stringify(test_profile_json));
+    //  check for duplicate
+    if (isEnvAlreadAdded(key)){
+      $.gritter.add({
+            text: 'Selected env is already Added to current Profile.',
+            title: $.trim($("#selectedOS").text()) +'-' + $.trim($("#osVersion").text())+ ' , ' + $.trim($("#selectedBr").find('.browserName').text()) + ' - ' + $.trim($("#selectedBr").find('.browserVersion').text()),
+            class_name: 'gritter-error gritter-light'
+          });
+      
+      return false;
+
+    }
+
+     test_profile_json.push({"data" :{
+                                    "key" : key,
+                                    "value" :{
+                                              "platform":"ANY",
+                                              "os": $.trim($("#selectedOS").text()), 
+                                              "os_version": $.trim($("#osVersion").text()),
+                                              "browser" : $.trim($("#selectedBr").find('.browserName').text()),
+                                              "browserName" : $.trim($("#selectedBr").find('.browserName').text()), 
+                                              "version" : $.trim($("#selectedBr").find('.browserVersion').text()),
+                                              "browser_version" : $.trim($("#selectedBr").find('.browserVersion').text()), 
+                                            }
+                                    }
+                        })  ;
+
+     // put id in row, it will help in deliting 
+
+     $('#templateOsBr').find('tr').attr('id', 'row_' + key).attr('class', 'brosRow');
+     $('#templateOsBr').find('.delete').attr('id',key);
+
+     $('#templateOsBr').find('#selectedCount').text($('#selectedOSBrList tr').length );
+     $('#templateOsBr').find('#brIcon').attr("src", "/img/logo/" + $("#selectedBr").find('.browserName').text().toLowerCase().replace(/ /g,'') + '.png')
+     $('#templateOsBr').find('#version').text($("#selectedBr").find('.browserVersion').text());
+     $('#templateOsBr').find('#selectedOSVersion').text($("#osVersion").text());
+
+     $('#templateOsBr').find('#osIcon').attr("src", "/img/logo/" + $("#selectedOS").text().toLowerCase().replace(/ /g,'') + '.png');
+     $("#selectedOSBrList tr:last").after( $('#templateOsBr tbody').html());
+     
+     // console.dir(test_profile_json);
+   });
+
+  // check duplicate
+  function isEnvAlreadAdded(key){
+    var isPresent = false;
+    $.each(test_profile_json, function (i, object) {
+      if (object != null && object.data.key === key) {
+          isPresent = true;
+        }
+    });
+    return isPresent;
+  }
+
+  // handle reomve os and browser
+  $("#selectedOSBrList").on('click', '.delete', function(event){
+    
+    var tr = $(this).closest('tr');
+    removeOsBrFromJson($(this).attr('id'));
+
+    tr.remove();
+
+
+    recalcRowIndex();
+  });
+  // remove from json
+  function removeOsBrFromJson(key){
+   for (var i= 0; i < test_profile_json.length; i++){
+          
+        if (test_profile_json[i] != null && test_profile_json[i].data.key == key){
+          delete test_profile_json[i]
+          return;
+        }
+    }
+  }
+  // reindex row
+  function recalcRowIndex(){
+   $("#selectedOSBrList").find('tr').each(function (i,el){
+        $(this).find("#selectedCount").text(i);
+    })
+
+  }
+  
+
+  //  to handle os dropdown show/hide
+  $("#os_menu").click(function(){
+    $("#os_menu_list").toggle();
+    event.preventDefault();
+
+
+  });
+    //  to handle os list click event
+    $(".os_li").click(function(event){
+      var selected_os = $(this).attr("id");
+      selectDefaultBrowser(selected_os);
+
+      //  fill browser list
+      addBrowserList(selected_os);
+      // remove style of prev selected
+      $('.items li').removeClass('sel');  
+      // change style of selected  os list
+      $(this).addClass("sel");
+
+      // change selected os image, name and version in dropdrown
+      $("#os_menu").find('span.icon').attr("class", "icon " +  selected_os);
+      $("#os_menu").find('#selectedOS').text(osName[selected_os]["name"]);
+      $("#os_menu").find('#osVersion').text(osName[selected_os]["version"]);
+      $("#os_menu_list").toggle();
+      event.preventDefault();
+
+    });
+
+    $("#pulldown-browser-big").on('click', 'li.browserVersionLi', function(e){
+      $("#browser_dropdown").find(".browserVersion").text(" "+ $(this).text());
+      $("#browser_dropdown").find(".browserName").text(" "+ $(this).attr("browserName"));
+      $("#browser_dropdown").find(".icon").attr('class', "icon "+ $(this).attr("browserName"));
+      $("#browser_menu_list").toggle();
+    });
+
+    function selectDefaultBrowser(selected_os){
+      //  set browser icon
+      $("#browser_dropdown").find(".icon").attr("class" , "icon " + defaultBroewser[selected_os]["browser"].toLowerCase());
+      $("#browser_dropdown").find(".browserName").text(defaultBroewser[selected_os]["browser"] + " ");
+      $("#browser_dropdown").find(".browserVersion").text(" "+ defaultBroewser[selected_os]["version"]);
+
+
+
+    };
+
+    function addBrowserList(selected_os){
+      //  add tabs
+
+      $("#browser_menu_list").html("");
+      var finalWidth = 2;
+      jQuery.each(env["br_os_combi"][selected_os], function(browserName, browserVersionList) {
+        // put icon
+        $('#tempBrTabDiv').find("#browserIcon").attr('class', "icon " + browserName);
+        
+        $('#tempBrTabDiv').find(".browserName").text(browserName);
+        var tempHtml = $('#tempBrTabDiv').html();
+        var extraClass= " pull-left browserTab ";
+        var width =  91 + 50 * Math.floor(browserVersionList.length/10) ;
+        
+        $("#browser_menu_list").append($('<div>', { id : browserName + "List" }).addClass(extraClass).css("width", width).html(tempHtml));
+        finalWidth = finalWidth +  width;
+        $ulLits = $('<ul>').addClass("items multi");
+        var currentUlId = 0;
+        $("#" + browserName + "List").append('<div style="width:50px; height:263px; text-align:center;"><ul class="items multi" id="0"></ul><div>');
+
+        for(var index = 0; index < browserVersionList.length; index++){
+          $("#" + browserName + "List").find('ul#' + currentUlId).append('<li class="browserVersionLi" browserName="' +  browserName + '"><a>' + browserVersionList[index]  + '</a></li>');
+          var tempUlId = Math.floor(index/10);
+          if (currentUlId !=  tempUlId){
+            $("#" + browserName + "List").append('<div style="width:50px; height:263px;text-align:center;"><ul class="items multi" id="' + tempUlId + '"></ul></div>');
+            currentUlId = tempUlId;
+          }
+
+
+        }
+
+        // $("#" + browserName + "List").append($ulLits);
+        
+
+
+      });
+
+$("#browser_menu_list").css("min-width", finalWidth);
+}
+    // handle broewser dropdown click event
+    
+    $("#browser_dropdown").click(function(e){
+      $("#browser_menu_list").toggle();
+      event.preventDefault();
+
+    });
+    // handle url changes based on application tab
+
+    $('.appTab').click(function (e) {
+      $(this).tab('show');
+      var scrollmem = $('body').scrollTop();
+      window.location.hash = this.hash;
+      $('html,body').scrollTop(scrollmem);
+    });
+
+    
+
+    // handle post for new profile create
+        // handle post request for testprofile
+        var request;
+
+        $("#testprofile_create").click(function () {
+        // abort any pending request
+        if (request) {
+          request.abort();
+        }
+
+        
+        var jsonData = {
+          "proj_id" : {{id}},
+          "name" : $("#testprofileName").val(),
+          "env" : []
+
+        };
+        console.dir(test_profile_json);
+        for (var i= 0; i < test_profile_json.length; i++){
+          if (test_profile_json[i] == null || test_profile_json[i] == undefined)
+            continue;
+          $.each(test_profile_json[i], function(key, value){
+            jsonData.env.push(test_profile_json[i].data.value);
+          });
+        }
+
+        
+        $("#errorCreate").hide();
+        $("#successCreate").hide();
+        // fire off the request to /user
+        request = $.ajax({
+          url: "/testprofile",
+          type: "post",
+          data: JSON.stringify(jsonData)
+        });
+        // callback handler that will be called on success
+        request.done(function (response, textStatus, jqXHR) {
+            // log a message to the console
+            $("#successCreate").text("You Test profile is created and testing started.");
+            $("#successCreate").show()
+            setTimeout(function () {
+                $('#modalNewProfile').modal('hide');
+                $('#modalNewProfile').hide();
+
+                // clear selected browser os 
+                $("#selectedOSBrList").find('.brosRow').each(function (i,el){
+                    console.log(el);
+                    el.remove();
+                })
+                $("#successCreate").hide();
+                test_profile_json = [];
+
+            }, 3000);
+
+      });
+
+        // callback handler that will be called on failure
+        request.fail(function (jqXHR, textStatus, errorThrown) {
+            // log the error to the console
+            data = $.parseJSON(request.responseText);
+            console.error(
+              "The following error occured: " +
+              textStatus, errorThrown
+              );
+            $("#errorCreate").text(data.msg);
+            $("#errorCreate").show();
+            setTimeout(function () {
+              $("#errorCreate").text('');
+            }, 4000);
+            
+          });
+
+        // callback handler that will be called regardless
+        // if the request failed or succeeded
+        request.always(function () {
+          });
+
+        // prevent default posting of form
+        event.preventDefault();
+
+      });
+
+
+    // handle post request for oldtestprofile run
+    var request;
+    $("#testprofile_run").click(function () {
+        // abort any pending request
+        if (request) {
+          request.abort();
+        }
+        // setup some local variables
+        var $form = $('#testprofile_form');
+        // let's select and cache all the fields
+        var $inputs = $form.find("input, select, button, textarea");
+        // serialize the data in the formv
+        var serializedData = $form.serialize();
+
+        // let's disable the inputs for the duration of the ajax request
+        $inputs.prop("disabled", true);
+        $("#errorRun").hide();
+        $("#successRun").hide();
+
+        // fire off the request to /user
+        request = $.ajax({
+          url: "/testprofile",
+          type: "post",
+          data: serializedData
+        });
+        // callback handler that will be called on success
+        request.done(function (response, textStatus, jqXHR) {
+            // log a message to the console
+            console.log(response);
+            $("#successRun").text("Testing is started.");
+            $("#successRun").show();
+            setTimeout(function () {
+                $('#modalProfile').modal('hide');
+                $('#modalNewProfile').hide();
+            }, 3000);
+
+            setTimeout(function () {
+                $("#successRun").hide();
+            }, 3000);
+
+
+
+                
+      });
+
+        // callback handler that will be called on failure
+        request.fail(function (jqXHR, textStatus, errorThrown) {
+            // log the error to the console
+            data = $.parseJSON(request.responseText);
+            console.error(
+              "The following error occured: " +
+              textStatus, errorThrown
+              );
+            $("#errorRun").text(data.msg);
+            $("#errorRun").show();
+          });
+
+        // callback handler that will be called regardless
+        // if the request failed or succeeded
+        request.always(function () {
+            // reenable the inputs
+            $inputs.prop("disabled", false);
+          });
+
+        // prevent default posting of form
+        event.preventDefault();
+
+      });
+
+// auto load browser and os
+$( "#os_menu" ).trigger( "click" );
+$( ".os_li:first" ).trigger( "click" );
+});
+
+</script>
+<!-- inline editing -->
+<script type="text/javascript">
+  
+ 
+  $(document).ready(function() {
+
+    var typeCompleted = false;
+    $.fn.editable.defaults.mode = 'popup';
+    $.fn.editable.defaults.ajaxOptions = {type: "PUT", dataType: 'json'};
+    var team = $.parseJSON("{{teammates}}".replace(/&#34;/g, '"'));
+   
+    var teamData = [];
+    $.each(team, function (id, name) {
+      teamData.push({value:id, text:name});
+    });
+
+    var bugScreenshotLoaded = false;
+     $("#bugsdetailsdiv").bind("DOMSubtreeModified",function(){
+
+      if ($("#bugsdetailsdiv").find('#assignedTo').length && !bugScreenshotLoaded){
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.ajaxOptions = {type: "PUT", dataType: 'json'};
+        bugScreenshotLoaded = true;
+
+        $("#bugsdetailsdiv").find('#type').html($("#bugsdetailsdiv").find('#type').text());
+        $("#bugsdetailsdiv").find('#title').editable({
+          type: 'textarea',
+          value: $("#bugsdetailsdiv").find('#title').attr('value'),
+          send: 'auto',
+          params: function(params) {
+              params[params.name] = params.value;
+              params["kind"] = "bugs#bug";
+              console.dir(JSON.stringify(params));
+              return JSON.stringify(params);
+          },
+          ajaxOptions: {
+              type: "PUT",
+              url: '/bugs/' + $("#bugsdetailsdiv").attr('bug_id') ,
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+          },
+        });
+        $("#bugsdetailsdiv").find('#type').editable({
+          type: 'select',
+          url: '/bug',
+          inputclass : 'editableTitle',
+          value: $("#bugsdetailsdiv").find('#type').attr('value'),
+          source : [
+                    {value:"bug", text:"Bug"},
+                    {value:"task", text:"Task"},
+                    {value:"new feature", text:"New Feature"},
+                    {value:"improvement", text:"Improvement"},
+                    {value:"epic", text:"Epic"},
+                    {value:"story", text:"Story"},
+                  ],
+          send: 'auto',
+          params: function(params) {
+              params[params.name] = params.value;
+              params["kind"] = "bugs#bug";
+              console.dir(JSON.stringify(params));
+              return JSON.stringify(params);
+          },
+          ajaxOptions: {
+              type: "PUT",
+              url: '/bugs/' + $("#bugsdetailsdiv").attr('bug_id') ,
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+          },
+        });
+        $('#priority').editable({
+          type: 'select',
+          url: '/bug',
+          inputclass : 'editableTitle',
+          value: $("#bugsdetailsdiv").find('#priority').attr('value'),
+          source : [
+                    {value:"critical", text:"Critical"},
+                    {value:"blocker", text:"Blocker"},
+                    {value:"major", text:"Major"},
+                    {value:"minor", text:"Minor"},
+                    {value:"trivial", text:"Trivial"}
+                  ],
+
+          send: 'auto',
+          params: function(params) {
+              params[params.name] = params.value;
+              params["kind"] = "bugs#bug";
+              console.dir(JSON.stringify(params));
+              return JSON.stringify(params);
+          },
+          ajaxOptions: {
+              type: "PUT",
+              url: '/bugs/' + $("#bugsdetailsdiv").attr('bug_id') ,
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+          },
+          success: function(response, newValue) {
+              if(response.status == 'error') 
+                return response.msg;
+              else:
+                alert(response);
+
+          },
+        });
+        $('#status').editable({
+          type: 'select',
+          url: '/bug',
+          inputclass : 'editableTitle',
+          value: $("#bugsdetailsdiv").find('#status').attr('value'),
+          source : [
+                    {value:"active", text:"Active"},
+                    {value:"closed", text:"Closed"},
+                    {value:"resolved", text:"Resolved"},
+                  ],
+          send: 'auto',
+          params: function(params) {
+              params[params.name] = params.value;
+              params["kind"] = "bugs#bug";
+              console.dir(JSON.stringify(params));
+              return JSON.stringify(params);
+          },
+          ajaxOptions: {
+              type: "PUT",
+              url: '/bugs/' + $("#bugsdetailsdiv").attr('bug_id') ,
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+          },
+        });
+        $('#assignedTo').editable({
+          type: 'select',
+          url: '/bug',
+          inputclass : 'editableTitle',
+          value: $('#assignedTo').attr('value'),
+          source : teamData,
+          send: 'auto',
+          params: function(params) {
+              params[params.name] = params.value;
+              params["kind"] = "bugs#bug";
+              console.dir(JSON.stringify(params));
+              return JSON.stringify(params);
+          },
+          ajaxOptions: {
+              type: "PUT",
+              url: '/bugs/' + $("#bugsdetailsdiv").attr('bug_id') ,
+              dataType: 'json',
+              contentType: 'application/json; charset=utf-8',
+          },
+        });
+
+      }
+    });
+
+
+    
+  });
+</script>
+
+<!-- testprofile post handler end here -->
+
+
+
+
+
+<!--  end -->
+
+
+
+<!-- new profile style -->
+
+
+<style type="text/css" media="screen">
+
+       /*.dropdown-menu.menu {
+          background-color:#fff;
+          border:1px solid #CECECE;
+          }*/
+          .menu .arrow {
+            background: url(../images/layout/dropdown-arrow.png?1360303919) no-repeat 0 0;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+          /*top: -16px;
+          left: 54px;*/
+          top:-16px; left: 5px;
+          border: 0;
+        }
+        /*.dropdown-menu a:hover{
+          background-color: #e19622;
+        }
+        .dropdown-menu a {
+          color: #000;
+          letter-spacing: 0;
+          text-transform: none;
+          border-bottom: none;
+          font-size:14px;
+          }*/
+          
+          @media screen and (max-width:1125px){
+
+            .navbar .nav > li.no-btn{
+              margin-right:15px;
+            }
+
+            #header .nav > li.no-btn.last-btn{
+              margin-right:15px;
+            }
+
+            .navbar .brand-wrapper li{
+              margin-right:15px;
+            }
+
+            .navbar .nav > li > a.reg-link,
+            #header .nav > li.no-btn .btn-group > a{
+              font-size: 11px;
+            }
+
+            .navbar .brand-wrapper li a.product{
+              font-size: 12px;
+            }
+
+        /*.product-dropdown{
+            display: block;
+            }*/
+
+          }
+
+          </style>
+          <!-- added css -->
+          <style type="text/css">
+          ol,ul,li,menu{
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+            margin: 0;
+            padding: 0;
+
+          }
+
+
+
+          ol,ul {
+            list-style: none;
+
+          }
+
+
+
+          img {
+            height: auto;
+            vertical-align: middle;
+            border: 0;
+            -ms-interpolation-mode: bicubic;
+          }
+
+
+
+          body {
+            margin: 0;
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            color: #584f47;
+
+          }
+
+
+
+
+
+
+          ul.styled,ol.styled {
+            margin: 0 0 0 25px;
+            list-style-type: disc;
+            vertical-align: top;
+          }
+
+          ul.styled li,ol.styled li {
+            margin: 0 0 16px 0;
+          }
+
+
+
+
+
+
+
+          .pull-right>.dropdown-menu {
+            right: 0;
+            left: auto;
+          }
+
+
+
+          .fade {
+            opacity: 0;
+            -webkit-transition: opacity .15s linear;
+            -moz-transition: opacity .15s linear;
+            -o-transition: opacity .15s linear;
+            -ms-transition: opacity .15s linear;
+            transition: opacity .15s linear;
+          }
+
+          .fade.in {
+            opacity: 1;
+          }
+
+
+
+
+
+
+          .pull-right {
+            float: right;
+          }
+
+          .pull-left {
+            float: left;
+          }
+
+          .hide {
+            display: none;
+          }
+
+          .show {
+            display: block;
+          }
+
+          .invisible {
+            visibility: hidden;
+          }
+
+          .affix {
+            position: fixed;
+          }
+
+
+          ol.linenums {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-left: 45px;
+            width: 100%;
+          }
+
+
+
+          html,body {
+            height: 100%;
+          }
+
+          html.ie7 {
+            *overflow-x: hidden;
+          }
+
+
+          hr {
+            float: left;
+            width: 100%;
+            height: 1px;
+            border: 0;
+            background-color: #a16d1d;
+            box-shadow: 0 -10px 30px 2px #e1cfbe;
+          }
+
+
+
+
+          .pulldown {
+            position: relative;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            float: left;
+            border-bottom: 1px solid #cecece;
+          }
+
+          .pulldown:last-child,.pulldown.last-child {
+            border-bottom: 0;
+          }
+
+          .user-role .pulldown:last-child,.user-role .pulldown.last-child {
+            border-bottom: 1px solid #d0c0a8;
+            padding-bottom: 0;
+          }
+
+          .pulldown-large {
+            position: relative;
+          }
+
+          .pulldown-large.first {
+            margin-right: 10px;
+          }
+
+          .pulldown,.pulldown-large {
+            cursor: pointer;
+          }
+
+          .pulldown:focus,.pulldown-large:focus {
+            outline: none;
+          }
+
+          .pulldown .first {
+            float: left;
+            position: relative;
+            width: 214px;
+            height: auto;
+            min-height: 24px;
+            font-weight: normal;
+            font-size: 14px;
+            background: #fff url(../images/layout/pulldown-bg-new.png?1360303919) no-repeat 193px -13px;
+          }
+
+          .pulldown .first:hover {
+            background: #fff url(../images/layout/pulldown-bg-new.png?1360303919) no-repeat 193px -60px;
+          }
+
+          .pulldown .first.active {
+            background: #fff url(../images/layout/pulldown-bg-new.png?1360303919) no-repeat 193px -108px;
+          }
+
+          .pulldown-large .first {
+            position: relative;
+            width: 238px;
+            height: 38px;
+            padding: 7px;
+            border: 1px solid #b8ae9d;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -ms-border-radius: 4px;
+            -o-border-radius: 4px;
+            border-radius: 4px;
+            background: #fff url(../images/layout/pulldown-bg-new.png?1360303919) no-repeat 232px -5px;
+          }
+
+
+
+
+
+
+          .pulldown .first,.pulldown-large .first {
+            *z-index: 9;
+          }
+
+          .pulldown a,.pulldown-large a {
+            color: #545454;
+            text-decoration: none;
+            float: left;
+            line-height: 24px;
+          }
+
+          .pulldown-large a {
+            font-size: 16px;
+            line-height: 26px;
+          }
+
+          .pulldown .first span.icon {
+            float: left;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            margin: 0 7px 0 5px;
+            background-repeat: no-repeat;
+          }
+
+          .pulldown-large .first span.icon {
+            float: left;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            margin-right: 5px;
+            background-repeat: no-repeat;
+          }
+
+          .pulldown .first span.browser-name {
+            float: left;
+            display: inline-block;
+            word-wrap: break-word;
+            width: 156px;
+          }
+
+
+
+          .menu {
+            position: absolute;
+            left: 0;
+            z-index: 999;
+            *z-index: 999;
+            text-align: left;
+            border: 1px solid #cecece;
+            -webkit-box-shadow: 0 5px 12px #c8c0b7;
+            -moz-box-shadow: 0 5px 12px #c8c0b7;
+            -ms-box-shadow: 0 5px 12px #c8c0b7;
+            -o-box-shadow: 0 5px 12px #c8c0b7;
+            box-shadow: 0 5px 12px #c8c0b7;
+            background: #4c4640;
+            width: auto;
+            min-width: 402px;
+            height: auto;
+            min-height: 100%;
+            margin-top: 30px;
+          }
+
+          #cpanel .menu,#pulldown-os-big .menu,#pulldown-browser-big .menu {
+            background: #fff;
+            z-index: 9999;
+            *z-index: 9999;
+          }
+
+          .menu .pointer-arrow {
+            display: block;
+            width: 24px;
+            height: 10px;
+            position: absolute;
+            top: -16px;
+            left: 30px;
+          }
+
+          .menu.active {
+            display: block;
+          }
+
+          .pulldown-large .menu {
+            margin-top: 1px;
+          }
+
+          .dropdown-menu.menu {
+            top: 13px;
+            *top: 40px;
+            left: -13px;
+            min-width: 1px;
+            width: auto;
+            border: 1px solid #978778;
+            border-top: 0;
+            padding: 5px 0;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            -ms-box-shadow: none;
+            -o-box-shadow: none;
+            box-shadow: none;
+            -webkit-border-radius: 0 0 3px 3px;
+            -moz-border-radius: 0 0 3px 3px;
+            -ms-border-radius: 0 0 3px 3px;
+            -o-border-radius: 0 0 3px 3px;
+            border-radius: 0 0 3px 3px;
+          }
+
+          .dropdown-menu.menu li:first-child a,.dropdown-menu.menu li.first-child a {
+            border-top: 0;
+          }
+
+          .dropdown-menu.menu li:last-child,.dropdown-menu.menu li.last-child,.dropdown-menu.menu li:last-child a,.dropdown-menu.menu li.last-child a,.dropdown-menu.menu li.arrow {
+            border-bottom: 0;
+          }
+
+          .dropdown-menu.menu li.logout:hover {
+            background: #fee0d1;
+          }
+
+          .dropdown-menu.menu li.arrow {
+            border-top: 0;
+            -webkit-border-radius: 5px 5px 0 0;
+            -moz-border-radius: 5px 5px 0 0;
+            -ms-border-radius: 5px 5px 0 0;
+            -o-border-radius: 5px 5px 0 0;
+            border-radius: 5px 5px 0 0;
+            display: none;
+          }
+
+
+          .menu div {
+            float: left;
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+          }
+
+          #mnu-browser.menu div,#mnu-browser-big.menu div {
+            width: auto;
+          }
+
+          .menu div:first-child {
+            border-left: 0;
+          }
+
+          .menu .arrow {
+            width: 70px;
+            height: 32px;
+            position: absolute;
+            top: -32px;
+            left: 0;
+            border: 0;
+            background: none;
+            -webkit-border-radius: 5px 5px 0 0;
+            -moz-border-radius: 5px 5px 0 0;
+            -ms-border-radius: 5px 5px 0 0;
+            -o-border-radius: 5px 5px 0 0;
+            border-radius: 5px 5px 0 0;
+          }
+
+          .menu .arrow+div {
+            border: 0;
+          }
+
+          .menu .title {
+            display: block;
+            border-left: 1px solid #cecece;
+            border-bottom: 1px solid #cecece;
+            background: #e7e2d9;
+            font: bold 14px/22px Helvetica Neue,Helvetica,Arial,sans-serif;
+            color: #584f47;
+            padding: 7px 5px;
+            text-shadow: 0 1px 0 #f2ede7;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            -ms-border-radius: 0;
+            -o-border-radius: 0;
+            border-radius: 0;
+          }
+
+          #mnu-browser.menu .title,#mnu-browser-big.menu .title {
+            text-align: center;
+            border-left: 0;
+            width: auto;
+          }
+
+          .menu .title.first-child {
+            border-left: 0;
+          }
+
+          .menu .title img {
+            margin: -3px 5px 0 0;
+          }
+
+          #mnu-browser,#mnu-browser-big {
+            width: 500px;
+          }
+
+          #mnu-os,#mnu-os-big {
+            width: 400px;
+          }
+
+          #mnu-os>div,#mnu-os-big>div {
+            width: 200px;
+          }
+
+          #mnu-os>div.ms-cta,#mnu-os-big>div.ms-cta {
+            float: left;
+            width: 380px;
+            padding: 10px;
+            background: #fee8d8;
+            border-top: 1px solid #fe8733;
+          }
+
+          #mnu-os>div.ms-cta small,#mnu-os-big>div.ms-cta small {
+            width: 280px;
+            line-height: 16px;
+          }
+
+          #mnu-os>div.ms-cta a.btn,#mnu-os-big>div.ms-cta a.btn {
+            float: right;
+            color: white;
+            margin-top: 16px;
+            margin-right: 0\9;
+          }
+
+          #mnu-os-big>div.ms-cta a.btn {
+            font-size: 12px;
+          }
+
+          small.ms-desc {
+            border-top: 1px solid #e1d9d1;
+            padding-top: 4px;
+            margin-top: 4px;
+            line-height: 15px;
+            font-size: 11px;
+          }
+          #selectedOSBrList{
+            margin-bottom: 40px;
+          }
+          #selectedOSBrList td, #selectedOSBrList th{
+            line-height: 30px;
+            min-width: 93px;
+            text-align: center;
+
+          }
+
+          #selectedOSBrList i:hover{
+            color: red;
+            transform:scale(1.7,1.7);
+            -ms-transform:scale(1.7,1.7);
+            -moz-transform:scale(1.7,1.7);
+            -webkit-transform:scale(1.7,1.7); 
+            -o-transform:scale(1.7,1.7);
+
+          }
+
+          #selectedOSBrList i{
+            transform:scale(1.3,1.3);
+            -ms-transform:scale(1.3,1.3);
+            -moz-transform:scale(1.3,1.3);
+            -webkit-transform:scale(1.3,1.3); 
+            -o-transform:scale(1.3,1.3);
+          }
+
+          .items {
+            float: left;
+            padding: 0;
+            width: 100%;
+            min-width: 90px;
+            height: auto;
+            border-right: 1px solid #ddd;
+          }
+
+          .items.multi {
+            width: auto;
+            min-width: 70px;
+            border-right: 0;
+          }
+
+          .items.multi.last {
+            border-right: 1px solid #ddd;
+          }
+
+          #mnu-browser .items,#mnu-browser-big .items {
+            width: 49px;
+          }
+
+          .items.last-child {
+            border-right: 0;
+          }
+
+
+          .items li {
+            float: left;
+            width: 100%;
+            font-size: 12px;
+            line-height: 28px;
+            padding: 3px 0;
+          }
+
+          .items li:hover {
+            background: #eeeae6;
+          }
+
+          .items li.sel {
+            background: #dccdbc;
+          }
+
+          .items li:first-child {
+            margin-top: 10px;
+          }
+
+          .items li:last-child,.items li.last-child {
+            margin-bottom: 10px;
+          }
+
+          .items li.ms-title-head {
+            background: #fee8d8;
+          }
+
+          .items li.ms-title-head .ms-title {
+            width: auto;
+            margin-left: 8px;
+            font-weight: bold;
+          }
+
+          .items li.ms-title .btn {
+            float: right;
+            width: auto;
+            margin-right: 5px;
+            margin-top: 3px;
+          }
+
+          .items li.disabled {
+            -ms-filter: "alpha(opacity=40)";
+            filter: alpha(opacity=40);
+            opacity: .4;
+            cursor: default;
+          }
+
+          .items li.disabled:hover {
+            background: #fff;
+          }
+
+          .items li.disabled a {
+            cursor: default;
+          }
+
+          .items.border li {
+            width: 100%;
+            float: left;
+            font-size: 12px;
+            line-height: 28px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #aa9d90;
+            padding: 0 0 10px;
+          }
+
+          .items.border li:last-child {
+            border: 0;
+            padding: 0;
+          }
+
+          .items li a {
+            float: left;
+            width: 100%;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 18px;
+            color: #545454;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            -ms-border-radius: 3px;
+            -o-border-radius: 3px;
+            border-radius: 3px;
+          }
+
+          #mnu-os .items li a,#mnu-os-big .items li a,#mnu-resolution .items li a {
+            line-height: 26px;
+          }
+
+          #mnu-browser .items a,#mnu-browser-big .items a {
+            text-align: center;
+            font-size: 13px;
+          }
+
+          #mnu-browser .items a:hover,#mnu-browser-big .items a:hover {
+            color: #545454;
+          }
+
+          .items li:hover a,.items li.sel a {
+            color: #786957;
+          }
+
+          .items .icon {
+            clear: both;
+            float: left;
+            display: block;
+            margin: 0 7px;
+            width: 24px;
+            margin-top: -2px;
+            height: 24px;
+          }
+
+          .items .desc {
+            float: left;
+            color: #959595;
+          }
+
+          #mnu-os .items .desc,#mnu-os-big .items .desc {
+            text-indent: 39px;
+            margin-top: -8px;
+          }
+          
+          span.icon {
+            float: left;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            margin-right: 5px;
+
+            background-repeat: no-repeat;
+          }
+          #version{
+            padding-right: 5px;
+          }
+          .browserVersionLi{
+            height: 22px;
+          }
+          .browserTab{
+
+          }
+          .browserTab1{
+            width: 91px;
+          }
+          .browserTab2{
+            width: 141px;
+          }
+          .browserTab3{
+            width: 211px;
+          }
+          .winxp {
+            background: url(/img/os_br.png) no-repeat 0 0;
+          }
+          .chrome {
+            background: url(/img/os_br.png) no-repeat 0 -168px;
+          }
+          .ie {
+            background: url(/img/os_br.png) no-repeat 0 -192px;
+          }
+          .safari {
+            background: url(/img/os_br.png) no-repeat 0 -216px;
+          }
+          .firefox {
+            background: url(/img/os_br.png) no-repeat 0 -240px;
+          }
+          .win7 {
+            background: url(/img/os_br.png) no-repeat 0 -24px;
+          }
+          .win8 {
+            background: url(/img/os_br.png) no-repeat 0 -48px;
+          }
+          .apple {
+            background: url(/img/os_br.png) no-repeat 0 -72px;
+            }.macsl {
+              background: url(/img/os_br.png) no-repeat 0 -72px;
+              }.maclion {
+                background: url(/img/os_br.png) no-repeat 0 -72px;
+                }.macml {
+                  background: url(/img/os_br.png) no-repeat 0 -72px;
+                }
+                .ios {
+                  background: url(/img/os_br.png) no-repeat 0 -96px;
+                }
+                .android {
+                  background: url(/img/os_br.png) no-repeat 0 -120px;
+                }
+                .testcaseHead{
+                  font-weight: bold;
+                }
+                .bugshead{
+                 
+                  color:#707070 ;
+
+                }
+                span.bugshead
+                {
+                     display: inline-block;
+                      width: 130px;
+                      padding-top: 5px;
+                      height: 32px;
+                }
+
+
+               .lineheader {
+                position: relative;
+                font-size: 15px;
+                z-index: 1;
+                overflow: hidden;
+                font-weight: bold;
+    
+                 }
+               .lineheader:after {
+                position: absolute;
+                top: 51%;
+                overflow: hidden;
+                width: 100%;
+                height: 1px;
+                content: '\a0';
+                background-color: #E8E8E8 ;
+                margin-left:2%;
+                }
+                .bugsbutton{width:80px;
+                  height:28px;}
+
+                .bugsResultRow{
+                  font-family: arial,sans-serif;
+                  font-size: 13px;
+                }
+                .clicked {
+                    width: auto;
+                }
+
+                #bugsdetailsdiv span{
+                  border: none;
+                }
+                .editableTitle{
+                  width:100%;
+                  position: relative;
+                  left:-10px;
+                }
+                textarea.editableTitle{
+                  position: relative;
+                  left: 20px;
+                  width: 400px;
+                  height: 100px;
+                  margin-right: 24px;
+                  margin-bottom: 20px;
+                }
+
+                </style>
+                <!-- added css -->
+                {% endblock %}
+
+

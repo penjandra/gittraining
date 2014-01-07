@@ -1,0 +1,200 @@
+{% extends "login_layout.html" %}
+
+{% block main %}
+<style>
+               .profile-info-value{margin-left:200px;}
+               .profile-info-name{width:200px;}
+              </style>
+
+<div class="page-content">
+	<div class="row">
+		<div class="col-sm-11" style="width:100%;" >
+			<div class="tabbable" >
+				<ul class="nav nav-tabs padding-2 tab-color-blue background-blue" id="myTab4">
+					<li class="active">
+						<a data-toggle="tab" href="#account">Account</a>
+					</li>
+
+					<li>
+						<a data-toggle="tab" href="#paiddetails">Paid Details</a>
+					</li>
+
+
+				</ul>
+
+				<div class="tab-content">
+					<div id="account" class="tab-pane in active">
+
+						<!-- account details tab-->
+						<div>
+							<div id="user-profile-1" class="user-profile row">
+								<div class="col-xs-12 col-sm-11">
+									<div class="profile-user-info profile-user-info-striped">
+
+										<div class="profile-info-row">
+											<div class="profile-info-name" > Organization </div>
+
+											<div class="profile-info-value">
+												<span class="editable" id="org">Akrantha software</span>
+											</div>
+										</div>
+										<div class="profile-info-row">
+											<div class="profile-info-name"> Name </div>
+											<div class="profile-info-value">
+												<span class="editable" id="username">Reddy</span>
+											</div>
+										</div>
+										<div class="profile-info-row">
+											<div class="profile-info-name" > Email </div>
+
+											<div class="profile-info-value">
+												<span class="editable" id="email">malludamodharreddy@gmail.com</span>
+											</div>
+										</div>
+										<div class="profile-info-row">
+											<div class="profile-info-name" > phone </div>
+
+											<div class="profile-info-value">
+												<span class="editable" id="phonenumber">9958654882</span>
+											</div>
+										</div>
+										<div class="profile-info-row">
+											<div class="profile-info-name"> date Joined </div>
+
+											<div class="profile-info-value">
+												<span class="editable" id="joineddate" type="date">25/12/2013</span>
+											</div>
+										</div>
+										
+
+										<div class="profile-info-row">
+											<div class="profile-info-name"> Status </div>
+
+											<div class="profile-info-value">
+												<select class="form-control" id="form-field-select-1" style="width:500px;">
+													<option value="">Paid Pending</option>
+													<option value="AL">Paid complete</option>
+												</select>
+											</div>
+										</div>
+
+									</div>
+
+									<div class="space-20"></div>
+
+
+									<div class="center">
+										<a href="#" class="btn btn-sm btn-primary">
+
+											<span class="bigger-110">Update</span>
+
+
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- account details tab  end -->	
+					</div>
+
+					<div id="paiddetails" class="tab-pane">
+
+						<!-- paid details tab-->
+						<div>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th class="center">#</th>
+										<th>Date Paid</th>
+										<th class="hidden-xs">Payment</th>
+										<th>Downloads</th>
+
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr>
+										<td class="center">1</td>
+
+										<td>01/12/2013</td>
+										<td>$10</td>
+										<td>take a print</td>	
+									</tr>	
+									<tr>
+										<td class="center">2</td>
+
+										<td>01/12/2013</td>
+										<td>$10</td>
+										<td>take a print</td>	
+									</tr>
+									<tr>
+										<td class="center">3</td>
+
+										<td>01/12/2013</td>
+										<td>$10</td>
+										<td>take a print</td>	
+									</tr>
+									<tr>
+										<td class="center">4</td>
+
+										<td>01/12/2013</td>
+										<td>$10</td>
+										<td>take a print</td>	
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<!-- paid details tab  end-->
+
+					</div>
+
+
+				</div>
+			</div>
+		</div><!-- /span -->
+	</div>
+</div>
+
+<script type="text/javascript">
+			jQuery(function($) {
+			
+				//editables on first profile page
+				$.fn.editable.defaults.mode = 'inline';
+				$.fn.editableform.loading = "<div class='editableform-loading'><i class='light-blue icon-2x icon-spinner icon-spin'></i></div>";
+			    $.fn.editableform.buttons = '<button type="submit" class="btn btn-info editable-submit"><i class="icon-ok icon-white"></i></button>'+
+			                                '<button type="button" class="btn editable-cancel"><i class="icon-remove"></i></button>';    
+				
+				//editables 
+			    $('#username').editable({
+					type: 'text',
+					name: 'username'
+			    });
+                $('#email').editable({
+					type: 'text',
+					name: 'email'
+			    });
+			    $('#org').editable({
+					type: 'text',
+					name: 'org'
+			    });
+			  
+			    $('#phonenumber').editable({
+					type: 'text',
+					name: 'phonenumber'
+			    });
+			    $('#joineddate').editable({
+					type: 'date',
+					format: 'yyyy-mm-dd',
+					viewformat: 'dd/mm/yyyy',
+					datepicker: {
+						weekStart: 1
+					}
+				});
+				
+				
+				});
+		</script>
+
+
+{% endblock %}
