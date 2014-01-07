@@ -18,8 +18,6 @@ RobusTest
 * it will start web server on port 8080
 
 ### How to edit html :
-* template loacation : /source_home_folder/googleApp/templates
-* change the temple
 * to see the changes, open respective page (localhost:8080/page) 
 * for more information please refer - http://jinja.pocoo.org/docs/
 
